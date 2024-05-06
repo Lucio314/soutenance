@@ -25,7 +25,7 @@
                     <h2 class="title">Sign in</h2>
                     <div class="input-field">
                         <i class="fas fa-user"></i>
-                        <input type="email" name="email" placeholder="Email" />
+                        <input type="email" name="email" value="{{old('email','')}}" placeholder="Email" />
                         @error('email')
                         {{$message}}
                         @enderror
@@ -70,7 +70,7 @@
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
-                        <input id="password_confirmation" type="password" name="password_confirmation" required />
+                        <input id="password_confirmation" type="password" name="password_confirmation" placeholder="Confirm password" required />
                     </div>
                     <input type="submit" class="btn" value="Sign up" />
                     <p class="social-text">Or Sign up with social platforms</p>

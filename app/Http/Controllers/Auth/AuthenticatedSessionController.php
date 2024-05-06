@@ -29,8 +29,11 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        $company = Auth::user()->company;
-        return redirect()->route('companies.dashboard', compact('company')); // intended(RouteServiceProvider::HOME);
+        if (Auth::user()->role == 'technician') {
+            return redirect()->route('technicians.dashboard');
+        }
+
+        return redirect()->route('companies.dashboard'); // intended(RouteServiceProvider::HOME);
 
     }
 

@@ -15,10 +15,11 @@ class ApplicationController extends Controller
     {
         // Récupérer les applications de la company actuellement connectée
         $company = Auth::user()->company;
+
         $applications = Application::where("company_id", $company->id)->with('problemCategories', 'company');
 
         // Retourner la vue avec les applications
-        return view('applications.index', compact('company', 'applications'));
+        return view('applications.index', compact('applications','company'));
     }
 
     /**
@@ -26,9 +27,9 @@ class ApplicationController extends Controller
      */
     public function create()
     {
-        $company = Auth::user()->company;
+
         // Retourner la vue pour créer une nouvelle application
-        return view('applications.create', compact('company'));
+        return view('applications.create');
     }
 
     /**
@@ -63,6 +64,7 @@ class ApplicationController extends Controller
      */
     public function edit(Application $application)
     {
+
         // Afficher le formulaire pour modifier l'application spécifiée
         return view('applications.edit', compact('application'));
     }
@@ -79,7 +81,7 @@ class ApplicationController extends Controller
         $application->update($validatedData);
 
         // Rediriger vers la page de détails de l'application mise à jour
-        return redirect()->route('applications.show', $application);
+        return redirect()->route('applications.index');
     }
 
     /**
@@ -87,7 +89,7 @@ class ApplicationController extends Controller
      */
     public function destroy(Application $application)
     {
-       
+
         // Supprimer l'application spécifiée de la base de données
         $application->delete();
 

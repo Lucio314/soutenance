@@ -13,15 +13,24 @@ class ProblemCategory extends Model
         'description',
         'is_active',
         'application_id',
+        'code_priority'
     ];
 
     // Relation avec l'application
     public function application()
     {
-        return $this->belongsTo(Application::class);
+        return $this->belongsTo(Application::class, 'application_id', 'id');
     }
     public function problem_priority()
     {
         return $this->belongsTo(ProblemPriority::class, 'code_priority', 'code_priority');
+    }
+    public function technicians()
+    {
+        return $this->belongsToMany(Technician::class, 'gerers', 'problem_category_id', 'technician_id');
+    }
+    public function gerers()
+    {
+        return $this->hasMany(Gerer::class, 'proble_category_id');
     }
 }

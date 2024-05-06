@@ -35,7 +35,6 @@ class TicketController extends Controller
             'object' => 'required|string|max:255',
             'content' => 'required|string',
             'status' => 'required|string',
-            'company_id' => 'required|integer',
             'uploaded_files' => 'nullable|array',
         ]);
 

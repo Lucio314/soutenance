@@ -53,7 +53,7 @@
             <nav class="navbar bg-light navbar-light">
                 <a href="#" class="navbar-brand mx-4 mb-3">
                     <h3 class="text-primary">
-                        <i class="bi bi-building me-2"></i>{{ Auth::user()->company->cpn_name}}
+                        <i class="bi bi-building me-2"></i>{{1+2}}
                     </h3>
                 </a>
 
@@ -76,21 +76,10 @@
                         class="nav-item nav-link @if(Request::is('companies/dashboard*')) active @endif">
                         <i class="fa fa-tachometer-alt me-2"></i>Dashboard
                     </a>
-                    <a href="{{ route('applications.index') }}"
-                        class="nav-item nav-link @if(Request::is('applications*')) active @endif">
-                        <i class="bi bi-layers me-2"></i>My App
-                    </a>
-                    <a href="{{route('problem_categories.index')}}"
-                        class="nav-item nav-link @if(Request::is('problem_categories*')) active @endif">
-                        <i class="fa fa-exclamation-triangle me-2"></i>My Problem Apps
-                    </a>
-                    <a href="{{ route('technicians.index') }}"
-                        class="nav-item nav-link @if(Request::is('technicians*')) active @endif">
-                        <i class="fa fa-users me-2"></i>My Technicians
-                    </a>
+
                     <a href="{{route('tickets.index')}}"
                         class="nav-item nav-link @if(Request::is('tickets*')) active @endif">
-                        <i class="fa fa-ticket-alt me-2"></i>All Tickets
+                        <i class="fa fa-ticket-alt me-2"></i>My Tickets
                     </a>
                 </div>
 
@@ -189,12 +178,8 @@
                         <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                             <a href="#" class="dropdown-item">My Profile</a>
                             <a href="#" class="dropdown-item">Settings</a>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item">Log out</button>
-                            </form>
+                            <a href="#" class="dropdown-item">Log Out</a>
                         </div>
-
                     </div>
                 </div>
             </nav>

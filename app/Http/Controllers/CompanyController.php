@@ -55,9 +55,6 @@ class CompanyController extends Controller
     }
     public function dashboard(Company $company)
     {
-        // Charger la relation 'user' avec la société
-        $company = Auth::user()->company;
-        $company->load('user');
 
         return view('companies.dashboard', compact('company'));
     }
@@ -67,7 +64,7 @@ class CompanyController extends Controller
      */
     public function show(Company $company)
     {
-        // Retourne une vue avec les détails de l'entreprise spécifiée
+
         return view('companies.show', compact('company'));
     }
 
@@ -76,7 +73,7 @@ class CompanyController extends Controller
      */
     public function edit(Company $company)
     {
-        // Retourne une vue pour modifier les détails de l'entreprise spécifiée
+       
         return view('companies.edit', compact('company'));
     }
 

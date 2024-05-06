@@ -167,7 +167,7 @@
                     <i class="fas fa-info-circle"></i>
                     <input type="text" name="description" placeholder="Description" required />
                 </div>
-              
+
                 <div class="input-field">
                     <i class="fas fa-unlock"></i>
                     <input type="text" name="unique_code" placeholder="Unique Code" required />
@@ -181,7 +181,7 @@
                     <input type="text" name="app_phone" placeholder="Application Phone" required />
                 </div>
                 <!-- Ajoutez un champ caché pour l'ID de la société -->
-                <input type="hidden" name="company_id" value="{{ $company->id }}" />
+                <input type="hidden" name="company_id" value="{{Auth::user()->company->id }}" />
                 <input type="submit" class="btn" value="Register" />
             </form>
         </div>

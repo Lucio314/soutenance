@@ -29,4 +29,8 @@ class Application extends Model
     {
         return $this->hasMany(ProblemCategory::class);
     }
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }

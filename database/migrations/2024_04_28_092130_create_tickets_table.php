@@ -14,15 +14,11 @@ return new class extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->string('client_email');
-            $table->string('app_code');
-            $table->foreign('app_code')->references('unique_code')->on('applications')->onDelete('cascade');
-            $table->unsignedBigInteger('category_id');
-            $table->foreign('category_id')->references('id')->on('problem_categories')->onDelete('cascade');
+            $table->foreignId('application_id')->constrained('applications')->onDelete('cascade');
+            $table->foreignId('problem_category_id')->constrained('problem_categories')->onDelete('cascade');
             $table->string('object');
             $table->text('content');
-            $table->string('status');
-            $table->unsignedBigInteger('company_id');
-            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->enum('status', ['Nouveau', 'Terminé', 'En cours'])->default('Nouveau');
             $table->json('uploaded_files')->nullable();
             $table->timestamps();
         });
