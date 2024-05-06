@@ -12,7 +12,9 @@ class ProblemCategoryController extends Controller
      */
     public function index()
     {
-        //
+        // Récupérer toutes les catégories de problème et les afficher dans une vue
+        $categories = ProblemCategory::all();
+        return view('problem_categories.index', compact('categories'));
     }
 
     /**
@@ -20,7 +22,8 @@ class ProblemCategoryController extends Controller
      */
     public function create()
     {
-        //
+        // Afficher le formulaire pour créer une nouvelle catégorie de problème
+        return view('problem_categories.create');
     }
 
     /**
@@ -28,7 +31,17 @@ class ProblemCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Valider les données du formulaire
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        // Créer une nouvelle catégorie de problème avec les données validées
+        $category = ProblemCategory::create($validatedData);
+
+        // Rediriger vers la page de détails de la nouvelle catégorie de problème
+        return redirect()->route('problem_categories.show', $category);
     }
 
     /**
@@ -36,7 +49,8 @@ class ProblemCategoryController extends Controller
      */
     public function show(ProblemCategory $problemCategory)
     {
-        //
+        // Afficher les détails de la catégorie de problème spécifiée
+        return view('problem_categories.show', compact('problemCategory'));
     }
 
     /**
@@ -44,7 +58,8 @@ class ProblemCategoryController extends Controller
      */
     public function edit(ProblemCategory $problemCategory)
     {
-        //
+        // Afficher le formulaire pour modifier la catégorie de problème spécifiée
+        return view('problem_categories.edit', compact('problemCategory'));
     }
 
     /**
@@ -52,7 +67,17 @@ class ProblemCategoryController extends Controller
      */
     public function update(Request $request, ProblemCategory $problemCategory)
     {
-        //
+        // Valider les données du formulaire
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        // Mettre à jour les données de la catégorie de problème avec les données validées
+        $problemCategory->update($validatedData);
+
+        // Rediriger vers la page de détails de la catégorie de problème mise à jour
+        return redirect()->route('problem_categories.show', $problemCategory);
     }
 
     /**
@@ -60,6 +85,10 @@ class ProblemCategoryController extends Controller
      */
     public function destroy(ProblemCategory $problemCategory)
     {
-        //
+        // Supprimer la catégorie de problème spécifiée de la base de données
+        $problemCategory->delete();
+
+        // Rediriger vers la liste des catégories de problème avec un message de succès
+        return redirect()->route('problem_categories.index')->with('success', 'Catégorie de problème supprimée avec succès.');
     }
 }

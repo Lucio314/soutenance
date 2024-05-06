@@ -17,6 +17,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
     protected $fillable = [
         'name',
         'email',
@@ -47,11 +48,11 @@ class User extends Authenticatable
     // Relation avec les techniciens
     public function technician()
     {
-        return $this->hasOne(Technician::class);
+        return $this->hasOne(Technician::class,'user_id');
     }
     // Relation avec l'entreprise
     public function company()
     {
-        return $this->hasOne(Company::class);
+        return $this->hasOne(Company::class, 'user_id');
     }
 }

@@ -21,7 +21,7 @@ class Application extends Model
     // Relation avec la société
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class, 'company_id', 'id');
     }
 
     // Relation avec les catégories de problèmes

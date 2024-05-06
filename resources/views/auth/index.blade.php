@@ -11,6 +11,7 @@
 
 <body>
     <div class="container">
+
         <div class="forms-container">
             <div class="signin-signup">
                 <!-- Session Status -->
@@ -25,6 +26,9 @@
                     <div class="input-field">
                         <i class="fas fa-user"></i>
                         <input type="email" name="email" placeholder="Email" />
+                        @error('email')
+                        {{$message}}
+                        @enderror
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
@@ -49,7 +53,7 @@
                         </a>
                     </div>
                 </form>
-                <form action="{{route('register')}}" class="sign-up-form" method="post" >
+                <form action="{{route('register')}}" class="sign-up-form" method="post">
                     @csrf
                     <h2 class="title">Sign up</h2>
                     <div class="input-field">
@@ -66,7 +70,7 @@
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
-                        <input id="password_confirmation" type="password" name="password_confirmation" required/>
+                        <input id="password_confirmation" type="password" name="password_confirmation" required />
                     </div>
                     <input type="submit" class="btn" value="Sign up" />
                     <p class="social-text">Or Sign up with social platforms</p>
