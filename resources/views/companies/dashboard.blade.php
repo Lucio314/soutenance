@@ -75,6 +75,9 @@
                         class="nav-item nav-link @if(Request::is('applications*')) active @endif">
                         <i class="bi bi-layers me-2"></i>My App
                     </a>
+                    <a href="#" class="nav-item nav-link @if(Request::is('problems_categories*')) active @endif">
+                        <i class="fa fa-exclamation-triangle me-2"></i>My Problem Apps
+                    </a>
                     <a href="{{ route('companies.dashboard', $company) }}"
                         class="nav-item nav-link @if(Request::is('technicians*')) active @endif">
                         <i class="fa fa-users me-2"></i>My Technicians

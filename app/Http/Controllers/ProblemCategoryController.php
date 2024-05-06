@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProblemCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProblemCategoryController extends Controller
 {
@@ -12,9 +13,12 @@ class ProblemCategoryController extends Controller
      */
     public function index()
     {
-        // Récupérer toutes les catégories de problème et les afficher dans une vue
-        $categories = ProblemCategory::all();
-        return view('problem_categories.index', compact('categories'));
+        $company = Auth::user()->company;
+        // Récupérer toutes les catégories de problème liées à l'application de la société de l'utilisateur authentifié
+        $categories = ProblemCategory::whereHas('application', function ($query) use ($company) {
+            $query->where('company_id', $company->id);
+        })->get();
+        return view('problem_categories.index', compact('categories', 'company'));
     }
 
     /**
@@ -35,6 +39,8 @@ class ProblemCategoryController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
+            'code_priority' => 'nullable|string|max:255',
+            'application_id' => 'required|exists:applications,id' // Assure que l'application existe
         ]);
 
         // Créer une nouvelle catégorie de problème avec les données validées
@@ -43,6 +49,7 @@ class ProblemCategoryController extends Controller
         // Rediriger vers la page de détails de la nouvelle catégorie de problème
         return redirect()->route('problem_categories.show', $category);
     }
+
 
     /**
      * Display the specified resource.
@@ -71,6 +78,7 @@ class ProblemCategoryController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
+            'code_priority' => 'nullable|string|max:255',
         ]);
 
         // Mettre à jour les données de la catégorie de problème avec les données validées

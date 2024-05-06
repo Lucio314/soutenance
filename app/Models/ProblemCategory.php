@@ -13,12 +13,13 @@ class ProblemCategory extends Model
         'description',
         'is_active',
         'application_id',
+        'code_priority'
     ];
 
     // Relation avec l'application
     public function application()
     {
-        return $this->belongsTo(Application::class);
+        return $this->belongsTo(Application::class, 'application_id', 'id');
     }
     public function problem_priority()
     {

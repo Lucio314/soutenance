@@ -15,7 +15,7 @@ class Ticket extends Model
         'object',
         'content',
         'status',
-        'company_id',
+        // 'company_id',
         'uploaded_files',
     ];
 
@@ -28,12 +28,12 @@ class Ticket extends Model
     // Relation avec la catégorie de problème
     public function problemCategory()
     {
-        return $this->belongsTo(ProblemCategory::class, 'category_id');
+        return $this->belongsTo(ProblemCategory::class, 'problem_category_id');
     }
 
     // Relation avec la société
-    public function company()
-    {
-        return $this->belongsTo(Company::class);
-    }
+    // public function company()
+    // {
+    //     return $this->belongsTo(Company::class);
+    // }
 }

@@ -10,19 +10,20 @@ class Technician extends Model
     use HasFactory;
     protected $fillable = [
         'user_id',
-        'category_id',
+        'problem_category_id',
+        'company_id'
     ];
 
     // Relation avec l'utilisateur
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'user_id');
     }
 
     // Relation avec la catégorie de problème
     public function problemCategory()
     {
-        return $this->belongsTo(ProblemCategory::class, 'category_id');
+        return $this->belongsTo(ProblemCategory::class, 'problem_category_id');
     }
     public function company()
     {
