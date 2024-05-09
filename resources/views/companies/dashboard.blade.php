@@ -80,11 +80,18 @@
                         class="nav-item nav-link @if(Request::is('applications*')) active @endif">
                         <i class="bi bi-layers me-2"></i>My App
                     </a>
+<<<<<<< HEAD
                     <a href="{{route('problem_categories.index')}}"
                         class="nav-item nav-link @if(Request::is('problem_categories*')) active @endif">
                         <i class="fa fa-exclamation-triangle me-2"></i>My Problem Apps
                     </a>
                     <a href="{{ route('technicians.index') }}"
+=======
+                    <a href="#" class="nav-item nav-link @if(Request::is('problems_categories*')) active @endif">
+                        <i class="fa fa-exclamation-triangle me-2"></i>My Problem Apps
+                    </a>
+                    <a href="{{ route('companies.dashboard', $company) }}"
+>>>>>>> 7300c5caa7056006324d5c9a26a6f8206b730999
                         class="nav-item nav-link @if(Request::is('technicians*')) active @endif">
                         <i class="fa fa-users me-2"></i>My Technicians
                     </a>

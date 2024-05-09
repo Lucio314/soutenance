@@ -17,13 +17,21 @@ class Technician extends Model
     // Relation avec l'utilisateur
     public function user()
     {
+<<<<<<< HEAD
         return $this->belongsTo(User::class, 'user_id');
+=======
+        return $this->belongsTo(User::class,'user_id');
+>>>>>>> 7300c5caa7056006324d5c9a26a6f8206b730999
     }
 
     // Relation avec la catégorie de problème
     public function problemCategories()
     {
+<<<<<<< HEAD
         return $this->belongsToMany(ProblemCategory::class, 'gerers', 'technician_id', 'problem_category_id');
+=======
+        return $this->belongsTo(ProblemCategory::class, 'problem_category_id');
+>>>>>>> 7300c5caa7056006324d5c9a26a6f8206b730999
     }
     public function company()
     {

@@ -35,10 +35,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/companies/dashboard', [CompanyController::class, 'dashboard'])->name('companies.dashboard');
     Route::resource('/companies', CompanyController::class);
     Route::resource('/applications', ApplicationController::class);
+<<<<<<< HEAD
     Route::resource('/problem_categories', ProblemCategoryController::class);
     Route::get('/technicians/dashboard', [TechnicianController::class, 'dashboard'])->name('technicians.dashboard');
     Route::resource('/technicians', TechnicianController::class);
     Route::resource('/tickets', TicketController::class);
+=======
+>>>>>>> 7300c5caa7056006324d5c9a26a6f8206b730999
 });
 
 

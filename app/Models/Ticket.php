@@ -30,6 +30,7 @@ class Ticket extends Model
     {
         return $this->belongsTo(ProblemCategory::class, 'problem_category_id');
     }
+<<<<<<< HEAD
     public function travaillers()
     {
         return $this->hasMany(Travailler::class);
@@ -41,4 +42,12 @@ class Ticket extends Model
             ->withPivot('transferred_to', 'created_at', 'updated_at')
             ->withTimestamps();
     }
+=======
+
+    // Relation avec la société
+    // public function company()
+    // {
+    //     return $this->belongsTo(Company::class);
+    // }
+>>>>>>> 7300c5caa7056006324d5c9a26a6f8206b730999
 }
