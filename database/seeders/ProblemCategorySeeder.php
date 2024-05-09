@@ -28,7 +28,6 @@ class ProblemCategorySeeder extends Seeder
                 'application_id' => 1, // Remplacer par l'ID de l'application liée
                 'code_priority' => 111 // Remplacer par le code de priorité correspondant
             ],
-<<<<<<< HEAD
             [
                 'name' => 'Network',
                 'description' => 'Issues related to network connectivity',
@@ -57,8 +56,6 @@ class ProblemCategorySeeder extends Seeder
                 'application_id' => 1, // Remplacer par l'ID de l'application liée
                 'code_priority' => 111 // Remplacer par le code de priorité correspondant
             ],
-=======
->>>>>>> 7300c5caa7056006324d5c9a26a6f8206b730999
             // Ajoutez d'autres catégories au besoin
         ];
 

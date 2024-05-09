@@ -13,32 +13,11 @@ class TechnicianSeeder extends Seeder
      */
     public function run(): void
     {
-<<<<<<< HEAD
         Technician::create([
             'user_id' => 4,
             'company_id' => 1,
         ]);
 
-     
-=======
-        $technicians = [
-            [
-                'user_id' => 1,
-                'company_id' => 1,
-                'problem_category_id' => 1,
-            ],
-            [
-                'user_id' => 2,
-                'company_id' => 1,
-                'problem_category_id' => 2,
-            ],
-            // Ajoutez d'autres techniciens au besoin
-        ];
 
-        // Insérer les données de test dans la base de données
-        foreach ($technicians as $technician) {
-            Technician::create($technician);
-        }
->>>>>>> 7300c5caa7056006324d5c9a26a6f8206b730999
     }
 }

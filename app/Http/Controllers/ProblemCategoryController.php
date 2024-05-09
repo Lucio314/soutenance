@@ -14,7 +14,6 @@ class ProblemCategoryController extends Controller
      */
     public function index()
     {
-<<<<<<< HEAD
         // Récupérer l'entreprise de l'utilisateur connecté
         $company = Auth::user()->company;
 
@@ -25,13 +24,6 @@ class ProblemCategoryController extends Controller
             })
             ->get();
 
-=======
-        $company = Auth::user()->company;
-        // Récupérer toutes les catégories de problème liées à l'application de la société de l'utilisateur authentifié
-        $categories = ProblemCategory::whereHas('application', function ($query) use ($company) {
-            $query->where('company_id', $company->id);
-        })->get();
->>>>>>> 7300c5caa7056006324d5c9a26a6f8206b730999
         return view('problem_categories.index', compact('categories', 'company'));
     }
 
@@ -100,11 +92,7 @@ class ProblemCategoryController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-<<<<<<< HEAD
             'code_priority' => 'required|string|max:255',
-=======
-            'code_priority' => 'nullable|string|max:255',
->>>>>>> 7300c5caa7056006324d5c9a26a6f8206b730999
         ]);
 
         // Mettre à jour les données de la catégorie de problème avec les données validées
