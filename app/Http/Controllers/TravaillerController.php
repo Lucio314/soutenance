@@ -12,7 +12,7 @@ class TravaillerController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**

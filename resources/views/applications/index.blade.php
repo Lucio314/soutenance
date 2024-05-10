@@ -6,7 +6,7 @@
     <a href="{{ route('applications.create') }}" class="btn btn-primary mb-3">Add Application</a>
 
     <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Name</th>

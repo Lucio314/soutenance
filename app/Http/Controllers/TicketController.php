@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Gerer;
+use App\Models\Technician;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,16 +19,31 @@ class TicketController extends Controller
     {
         // Récupérer l'entreprise de l'utilisateur connecté
         $company = Auth::user()->company;
+        if ($company !== null) {
 
-        // Récupérer les tickets liés aux applications de l'entreprise connectée
-        $tickets = Ticket::whereHas('application', function ($query) use ($company) {
-            $query->where('company_id', $company->id);
+            // Récupérer les tickets liés aux applications de l'entreprise connectée
+            $tickets = Ticket::whereHas('application', function ($query) use ($company) {
+                $query->where('company_id', $company->id);
+            })->get();
+        }
+        // Retourner la vue avec les tickets récupérés
+        return view('tickets.index', compact('tickets', 'company'));
+    }
+    public function myindex(Technician $technician)
+    {
+        $technician = Auth::user()->technician;
+        // dd($technician);
+        $problemCategoriesIds = Gerer::where('technician_id', $technician->id)
+            ->pluck('problem_category_id')
+            ->toArray();
+
+        $tickets = Ticket::whereHas('problemCategory', function ($query) use ($problemCategoriesIds) {
+            $query->whereIn('id', $problemCategoriesIds);
         })->get();
 
-        // Retourner la vue avec les tickets récupérés
-        return view('tickets.index', compact('tickets','company'));
+        // Retourner la vue avec les tickets filtrés
+        return view('tickets.myindex', compact('tickets'));
     }
-
     /**
      * Show the form for creating a new resource.
      *

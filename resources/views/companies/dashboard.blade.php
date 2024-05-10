@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>DASHMIN - Bootstrap Admin Template</title>
+    <title>Company Dashboard</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -13,7 +13,7 @@
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>    
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
@@ -80,18 +80,11 @@
                         class="nav-item nav-link @if(Request::is('applications*')) active @endif">
                         <i class="bi bi-layers me-2"></i>My App
                     </a>
-<<<<<<< HEAD
                     <a href="{{route('problem_categories.index')}}"
                         class="nav-item nav-link @if(Request::is('problem_categories*')) active @endif">
                         <i class="fa fa-exclamation-triangle me-2"></i>My Problem Apps
                     </a>
                     <a href="{{ route('technicians.index') }}"
-=======
-                    <a href="#" class="nav-item nav-link @if(Request::is('problems_categories*')) active @endif">
-                        <i class="fa fa-exclamation-triangle me-2"></i>My Problem Apps
-                    </a>
-                    <a href="{{ route('companies.dashboard', $company) }}"
->>>>>>> 7300c5caa7056006324d5c9a26a6f8206b730999
                         class="nav-item nav-link @if(Request::is('technicians*')) active @endif">
                         <i class="fa fa-users me-2"></i>My Technicians
                     </a>

@@ -48,7 +48,7 @@ class User extends Authenticatable
     // Relation avec les techniciens
     public function technician()
     {
-        return $this->hasOne(Technician::class,'user_id');
+        return $this->hasOne(Technician::class, 'user_id', 'id');
     }
     // Relation avec l'entreprise
     public function company()

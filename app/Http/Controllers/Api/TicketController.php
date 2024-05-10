@@ -4,11 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
+use App\Models\Application;
+use App\Models\ProblemCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class TicketController extends Controller
 {
+    public function create()
+    {
+        // Récupérer toutes les applications
+        $applications = Application::all();
+
+        // Récupérer toutes les catégories de problèmes
+        $problemCategories = ProblemCategory::all();
+
+        // Passer les données à la vue
+        return view('tickets.create', compact('applications', 'problemCategories'));
+    }
+
     /**
      * Display a listing of the tickets.
      *
@@ -28,13 +42,15 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
+        //   dd($request);
         $validator = Validator::make($request->all(), [
             'client_email' => 'required|email',
-            'application_id' => 'required|integer',
-            'category_id' => 'required|integer',
+            'application_id' => 'required|exists:applications,id',
+
+            'problem_category_id' => 'nullable|exists:problem_categories,id',
             'object' => 'required|string|max:255',
             'content' => 'required|string',
-            'status' => 'required|string',
+            'status' => 'nullable|string',
             'uploaded_files' => 'nullable|array',
         ]);
 
@@ -42,7 +58,7 @@ class TicketController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $ticket = Ticket::create($validator->validated());
+        $ticket = Ticket::create($validator);
         return response()->json(['ticket' => $ticket], 201);
     }
 
@@ -54,8 +70,6 @@ class TicketController extends Controller
      */
     public function show(Ticket $ticket)
     {
-
-
         if (!$ticket) {
             return response()->json(['error' => 'Ticket not found'], 404);
         }
@@ -71,8 +85,6 @@ class TicketController extends Controller
      */
     public function destroy(Ticket $ticket)
     {
-
-
         if (!$ticket) {
             return response()->json(['error' => 'Ticket not found'], 404);
         }

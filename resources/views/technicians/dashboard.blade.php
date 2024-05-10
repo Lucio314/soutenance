@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>DASHMIN - Bootstrap Admin Template</title>
+    <title></title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -52,9 +52,9 @@
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-light navbar-light">
                 <a href="#" class="navbar-brand mx-4 mb-3">
-                    <h3 class="text-primary">
-                        <i class="bi bi-building me-2"></i>{{1+2}}
-                    </h3>
+                    <h5 class="text-primary">
+                        <i class="bi bi-person me-2"></i>Tech Dash
+                    </h5>
                 </a>
 
                 <div class="d-flex align-items-center ms-4 mb-4">
@@ -77,7 +77,7 @@
                         <i class="fa fa-tachometer-alt me-2"></i>Dashboard
                     </a>
 
-                    <a href="{{route('tickets.index')}}"
+                    <a href="{{route('tickets.myindex')}}"
                         class="nav-item nav-link @if(Request::is('tickets*')) active @endif">
                         <i class="fa fa-ticket-alt me-2"></i>My Tickets
                     </a>
@@ -178,7 +178,10 @@
                         <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                             <a href="#" class="dropdown-item">My Profile</a>
                             <a href="#" class="dropdown-item">Settings</a>
-                            <a href="#" class="dropdown-item">Log Out</a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Log out</button>
+                            </form>
                         </div>
                     </div>
                 </div>

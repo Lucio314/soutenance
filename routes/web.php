@@ -6,6 +6,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ProblemCategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TechnicianController;
+use App\Http\Controllers\TravaillerController;
 use App\Models\Technician;
 use Illuminate\Support\Facades\Route;
 
@@ -38,7 +39,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('/problem_categories', ProblemCategoryController::class);
     Route::get('/technicians/dashboard', [TechnicianController::class, 'dashboard'])->name('technicians.dashboard');
     Route::resource('/technicians', TechnicianController::class);
+    Route::get('/tickets/myindex', [TicketController::class, 'myindex'])->name('tickets.myindex');
     Route::resource('/tickets', TicketController::class);
+
+    Route::resource('/travaillers', TravaillerController::class);
 });
 
 
