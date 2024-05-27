@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Application extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'app_name',
         'description',
@@ -18,17 +19,38 @@ class Application extends Model
         'company_id',
     ];
 
-    // Relation avec la société
+    /**
+     * Boot method for the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Generate a unique API key when creating a new application
+        static::creating(function ($application) {
+            $application->unique_code = bin2hex(random_bytes(30));
+        });
+    }
+
+    /**
+     * Get the company that owns the application.
+     */
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id', 'id');
     }
 
-    // Relation avec les catégories de problèmes
+    /**
+     * Get the problem categories for the application.
+     */
     public function problemCategories()
     {
         return $this->hasMany(ProblemCategory::class);
     }
+
+    /**
+     * Get the tickets for the application.
+     */
     public function tickets()
     {
         return $this->hasMany(Ticket::class);

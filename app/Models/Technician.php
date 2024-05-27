@@ -39,7 +39,7 @@ class Technician extends Model
     public function tickets()
     {
         return $this->belongsToMany(Technician::class, 'travaillers',  'technician_id', 'ticket_id')
-            ->withPivot('transferred_to') // Ajoutez d'autres colonnes pivot si nécessaire
-            ->withTimestamps(); // Pour ajouter automatiquement les timestamps created_at et updated_at
+            ->withPivot('transferred_to')
+            ->withTimestamps();
     }
 }

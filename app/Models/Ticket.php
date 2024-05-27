@@ -11,7 +11,7 @@ class Ticket extends Model
     protected $fillable = [
         'client_email',
         'application_id',
-        'category_id',
+        'problem_category_id',
         'object',
         'content',
         'status',

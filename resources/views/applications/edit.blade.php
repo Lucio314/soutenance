@@ -27,10 +27,7 @@
                     <i class="fas fa-info-circle"></i>
                     <input type="text" name="description" placeholder="Description" value="{{ $application->description }}" required />
                 </div>
-                <div class="input-field">
-                    <i class="fas fa-unlock"></i>
-                    <input type="text" name="unique_code" placeholder="Unique Code" value="{{ $application->unique_code }}" required />
-                </div>
+
                 <div class="input-field">
                     <i class="fas fa-envelope"></i>
                     <input type="email" name="app_email" placeholder="Application Email" value="{{ $application->app_email }}" required />

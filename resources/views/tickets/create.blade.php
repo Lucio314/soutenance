@@ -1,3 +1,4 @@
+<!-- resources/views/tickets/create.blade.php -->
 <style>
     /* Styles for form container */
     .ticket-form {
@@ -25,7 +26,7 @@
         margin-bottom: 16px;
         border: 1px solid #ccc;
         border-radius: 4px;
-        box-sizing: border-box; /* Ensure padding is included in width */
+        box-sizing: border-box;
     }
 
     /* Styles for form select */
@@ -36,7 +37,7 @@
         border: 1px solid #ccc;
         border-radius: 4px;
         background-color: #fff;
-        box-sizing: border-box; /* Ensure padding is included in width */
+        box-sizing: border-box;
     }
 
     /* Styles for form button */
@@ -62,23 +63,13 @@
     }
 </style>
 
-<form id="ticket-create-container" method="post" action="http://localhost:8000/api/tickets" class="ticket-form" enctype="multipart/form-data">
+<form id="ticket-create-container" method="post" action="{{ url('/api/tickets') }}" class="ticket-form" enctype="multipart/form-data">
     @csrf
     <label for="client_email">Adresse e-mail du client:</label>
     <input type="email" id="client_email" name="client_email" placeholder="Adresse e-mail du client" required>
 
-
-    <label for="application_id">Application:</label>
-    <select name="application_id">
-        <option value="">Sélectionnez une application</option>
-        @foreach ($applications as $application)
-        <option value="{{ $application->id }}">{{ $application->app_name }}</option>
-        @endforeach
-    </select>
-
-
     <label for="problem_category_id">Catégorie de problème:</label>
-    <select name="problem_category_id">
+    <select name="problem_category_id" required>
         <option value="">Sélectionnez une catégorie de problème</option>
         @foreach ($problemCategories as $category)
         <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -91,10 +82,8 @@
     <label for="content">Contenu:</label>
     <textarea id="content" name="content" placeholder="Contenu du ticket" required></textarea>
 
-
     <label for="uploaded_files">Fichiers joints:</label>
     <input type="file" id="uploaded_files" name="uploaded_files[]" multiple>
 
-
-    <button type="submit">Enregistrer</button>
+    <input type="submit" value="Enregistrer"/>
 </form>

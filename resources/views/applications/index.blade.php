@@ -22,7 +22,7 @@
                 <tr>
                     <td>{{ $application->app_name }}</td>
                     <td>{{ $application->description }}</td>
-                    <td>{{ $application->unique_code }}</td>
+                    <td>{{substr($application->unique_code,0,5).'...' }}</td>
                     <td>{{ $application->app_email }}</td>
                     <td>{{ $application->app_phone }}</td>
                     <td>

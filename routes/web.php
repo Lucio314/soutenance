@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('/tickets', TicketController::class);
 
     Route::resource('/travaillers', TravaillerController::class);
+    Route::post('/tickets/{ticketId}/handle/{technicianId}', [TicketController::class, 'handleTicket'])->name('tickets.handle');
+
+    // Route pour clôturer un ticket
+    Route::post('/tickets/{ticketId}/close/{technicianId}', [TicketController::class, 'closeTicket'])->name('tickets.close');
 });
 
 

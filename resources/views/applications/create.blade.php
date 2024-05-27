@@ -169,10 +169,6 @@
                 </div>
 
                 <div class="input-field">
-                    <i class="fas fa-unlock"></i>
-                    <input type="text" name="unique_code" placeholder="Unique Code" required />
-                </div>
-                <div class="input-field">
                     <i class="fas fa-envelope"></i>
                     <input type="email" name="app_email" placeholder="Application Email" required />
                 </div>

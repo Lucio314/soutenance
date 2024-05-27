@@ -44,6 +44,93 @@ class TicketController extends Controller
         // Retourner la vue avec les tickets filtrés
         return view('tickets.myindex', compact('tickets'));
     }
+    public function transfer(Request $request, $ticketId)
+    {
+        $request->validate([
+            'technician_id' => 'required|exists:technicians,id',
+        ]);
+
+        $ticket = Ticket::findOrFail($ticketId);
+        $currentTechnician = auth()->user()->technician;
+
+        $ticket->technicians()->updateExistingPivot($currentTechnician->id, [
+            'transferred_to' => $request->technician_id,
+        ]);
+
+        return redirect()->back()->with('success', 'Ticket transféré avec succès.');
+    }
+    public function handleTicket(Request $request, $ticketId, $technicianId)
+    {
+        $ticket = Ticket::findOrFail($ticketId);
+        $technician = Technician::findOrFail($technicianId);
+
+        // Vérifier si le technicien est autorisé à traiter ce ticket
+        $problemCategoriesIds = Gerer::where('technician_id', $technician->id)
+            ->pluck('problem_category_id')
+            ->toArray();
+
+        if (!in_array($ticket->problem_category_id, $problemCategoriesIds)) {
+            return redirect()->back()->withErrors(['error' => 'Unauthorized to handle this ticket']);
+        }
+
+        // Mettre à jour le statut du ticket
+        $ticket->status = 'En cours';
+        $ticket->save();
+
+        // Vérifier si une entrée existante dans Travailler doit être mise à jour ou créée
+        $existingEntry = $technician->travaillers()->where('ticket_id', $ticket->id)->first();
+        if ($existingEntry) {
+            $existingEntry->transferred_to = null;
+            $existingEntry->save();
+        } else {
+            // Enregistrer les détails du traitement dans la table pivot Travailler
+            $technician->travaillers()->create([
+                'ticket_id' => $ticket->id,
+                'transferred_to' => null, // Aucun transfert
+            ]);
+        }
+
+        return redirect()->route('tickets.show', $ticketId)->with('success', 'Ticket en cours de traitement par le technicien.');
+    }
+
+    /**
+     * Close a ticket by a technician.
+     */
+    public function closeTicket(Request $request, $ticketId, $technicianId)
+    {
+        $ticket = Ticket::findOrFail($ticketId);
+        $technician = Technician::findOrFail($technicianId);
+
+        // Vérifier si le technicien est autorisé à traiter ce ticket
+        $problemCategoriesIds = Gerer::where('technician_id', $technician->id)
+            ->pluck('problem_category_id')
+            ->toArray();
+
+        if (!in_array($ticket->problem_category_id, $problemCategoriesIds)) {
+            return redirect()->back()->withErrors(['error' => 'Unauthorized to close this ticket']);
+        }
+
+        // Mettre à jour le statut du ticket
+        $ticket->status = 'terminé';
+        $ticket->save();
+
+        // Enregistrer les détails de la clôture dans la table pivot Travailler
+        $existingEntry = $technician->travaillers()->where('ticket_id', $ticket->id)->first();
+        if ($existingEntry) {
+            $existingEntry->transferred_to = null;
+            $existingEntry->save();
+        } else {
+            // Enregistrer les détails de la clôture dans la table pivot Travailler
+            $technician->travaillers()->create([
+                'ticket_id' => $ticket->id,
+                'transferred_to' => null, // Aucun transfert
+            ]);
+        }
+
+        return redirect()->route('tickets.show', $ticketId)->with('success', 'Ticket terminé par le technicien.');
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *

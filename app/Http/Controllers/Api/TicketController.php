@@ -11,16 +11,26 @@ use Illuminate\Support\Facades\Validator;
 
 class TicketController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
-        // Récupérer toutes les applications
-        $applications = Application::all();
+
+        $application = $request->attributes->get('application');
+        // dd($application);
+        if (!$application) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Récupérer les catégories de problèmes spécifiques à l'application
+        $problemCategories = $application->problemCategories;
+
+
+
 
         // Récupérer toutes les catégories de problèmes
         $problemCategories = ProblemCategory::all();
 
         // Passer les données à la vue
-        return view('tickets.create', compact('applications', 'problemCategories'));
+        return view('tickets.create', compact('problemCategories'));
     }
 
     /**
@@ -42,25 +52,34 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        //   dd($request);
-        $validator = Validator::make($request->all(), [
+        // Valider les données du formulaire
+        $validated = $request->validate([
             'client_email' => 'required|email',
-            'application_id' => 'required|exists:applications,id',
-
-            'problem_category_id' => 'nullable|exists:problem_categories,id',
+            'problem_category_id' => 'required|integer',
             'object' => 'required|string|max:255',
             'content' => 'required|string',
-            'status' => 'nullable|string',
-            'uploaded_files' => 'nullable|array',
+            'uploaded_files.*' => 'file|max:2048' // Limite de taille de fichier à 2 Mo par fichier
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
+        // Créer le ticket
+        $ticket = new Ticket();
+        $ticket->client_email = $validated['client_email'];
+        $ticket->problem_category_id = $validated['problem_category_id'];
+        $ticket->object = $validated['object'];
+        $ticket->content = $validated['content'];
+        $ticket->save();
+
+        // Gérer les fichiers joints
+        if ($request->hasFile('uploaded_files')) {
+            foreach ($request->file('uploaded_files') as $file) {
+                $path = $file->store('uploads');
+                // Enregistrez le chemin du fichier ou traitez le fichier selon vos besoins
+            }
         }
 
-        $ticket = Ticket::create($validator);
-        return response()->json(['ticket' => $ticket], 201);
+        return response()->json(['message' => 'Ticket créé avec succès']);
     }
+
 
     /**
      * Display the specified ticket.
@@ -93,3 +112,6 @@ class TicketController extends Controller
         return response()->json(['message' => 'Ticket deleted successfully'], 200);
     }
 }
+
+
+
