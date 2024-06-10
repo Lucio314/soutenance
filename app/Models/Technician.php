@@ -4,21 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Technician extends Model
 {
     use HasFactory;
+    use Notifiable;
     protected $fillable = [
         'user_id',
         'company_id'
     ];
+
 
     // Relation avec l'utilisateur
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
-
+    public function routeNotificationForMail()
+    {
+        // Retourne l'email de l'utilisateur associé
+        return $this->user->email;
+    }
     // Relation avec la catégorie de problème
     public function problemCategories()
     {

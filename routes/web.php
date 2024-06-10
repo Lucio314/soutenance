@@ -9,6 +9,8 @@ use App\Http\Controllers\TechnicianController;
 use App\Http\Controllers\TravaillerController;
 use App\Models\Technician;
 use Illuminate\Support\Facades\Route;
+use App\Notifications\NewTicketNotification;
+use Illuminate\Support\Facades\Notification;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +46,10 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('/travaillers', TravaillerController::class);
     Route::post('/tickets/{ticketId}/handle/{technicianId}', [TicketController::class, 'handleTicket'])->name('tickets.handle');
+    Route::post('/tickets/verrouiller-en-masse', [TicketController::class, 'verrouillerEnMasse'])->name('tickets.verrouillerEnMasse');
+
+
+
 
     // Route pour clôturer un ticket
     Route::post('/tickets/{ticketId}/close/{technicianId}', [TicketController::class, 'closeTicket'])->name('tickets.close');

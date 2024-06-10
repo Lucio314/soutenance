@@ -1,5 +1,3 @@
-<!-- resources/views/tickets/show.blade.php -->
-
 @extends('technicians.dashboard')
 
 @section('content')
@@ -15,7 +13,7 @@
             </div>
             <div class="mb-3">
                 <label for="application" class="form-label">Application:</label>
-                <p id="application">{{ $ticket->application->name }}</p>
+                <p id="application">{{ $ticket->application->app_name }}</p>
             </div>
             <div class="mb-3">
                 <label for="problem_category" class="form-label">Catégorie de problème:</label>
@@ -37,30 +35,19 @@
                 <label for="created_at" class="form-label">Créé le:</label>
                 <p id="created_at">{{ $ticket->created_at->format('d/m/Y H:i') }}</p>
             </div>
-            <div class="mb-3">
-                <label for="updated_at" class="form-label">Mis à jour le:</label>
-                <p id="updated_at">{{ $ticket->updated_at->format('d/m/Y H:i') }}</p>
-            </div>
+
             @if($ticket->uploaded_files)
                 <div class="mb-3">
                     <label for="uploaded_files" class="form-label">Fichiers téléversés:</label>
                     <ul id="uploaded_files">
-                        @foreach($ticket->uploaded_files as $file)
+                        @foreach(json_decode($ticket->uploaded_files, true) as $file)
                             <li><a href="{{ asset('storage/' . $file) }}" target="_blank">{{ basename($file) }}</a></li>
                         @endforeach
                     </ul>
                 </div>
             @endif
         </div>
-        <div class="card-footer">
-            <a href="{{ route('tickets.edit', $ticket->id) }}" class="btn btn-primary">Modifier</a>
-            <form action="{{ route('tickets.destroy', $ticket->id) }}" method="POST" style="display: inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger">Supprimer</button>
-            </form>
-            <a href="{{ route('tickets.index') }}" class="btn btn-secondary">Retour</a>
-        </div>
+      
     </div>
 </div>
 @endsection

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Application;
 use App\Models\Gerer;
+use App\Models\ProblemCategory;
+use App\Models\ProblemPriority;
 use App\Models\Technician;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
@@ -15,35 +18,88 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+
+    public function index(Request $request)
     {
         // Récupérer l'entreprise de l'utilisateur connecté
         $company = Auth::user()->company;
-        if ($company !== null) {
 
-            // Récupérer les tickets liés aux applications de l'entreprise connectée
-            $tickets = Ticket::whereHas('application', function ($query) use ($company) {
+        if ($company !== null) {
+            // Construire la requête de base pour les tickets liés aux applications de l'entreprise connectée
+            $ticketsQuery = Ticket::whereHas('application', function ($query) use ($company) {
+                $query->where('company_id', $company->id);
+            });
+
+            // Filtrer par catégorie de problème si une catégorie est sélectionnée
+            if ($request->filled('category')) {
+                $ticketsQuery->where('problem_category_id', $request->category);
+            }
+
+            // Filtrer par application si une application est sélectionnée
+            if ($request->filled('application')) {
+                $ticketsQuery->where('application_id', $request->application);
+            }
+
+            // Récupérer les tickets correspondant aux critères de filtrage
+            $tickets = $ticketsQuery->paginate(10);
+
+            // Récupérer les catégories de problèmes associées aux applications de l'entreprise
+            $problemCategories = ProblemCategory::whereHas('application', function ($query) use ($company) {
                 $query->where('company_id', $company->id);
             })->get();
+
+            // Récupérer les applications de l'entreprise
+            $applications = Application::where('company_id', $company->id)->get();
+        } else {
+            $tickets = collect(); // Une collection vide si aucune entreprise n'est trouvée
+            $problemCategories = collect(); // Une collection vide si aucune entreprise n'est trouvée
+            $applications = collect(); // Une collection vide si aucune entreprise n'est trouvée
         }
-        // Retourner la vue avec les tickets récupérés
-        return view('tickets.index', compact('tickets', 'company'));
+
+        // Retourner la vue avec les tickets et les catégories de problèmes récupérés
+        return view('tickets.index', compact('tickets', 'company', 'problemCategories', 'applications'));
     }
-    public function myindex(Technician $technician)
+
+
+    public function myindex(Request $request)
     {
         $technician = Auth::user()->technician;
-        // dd($technician);
         $problemCategoriesIds = Gerer::where('technician_id', $technician->id)
             ->pluck('problem_category_id')
             ->toArray();
 
-        $tickets = Ticket::whereHas('problemCategory', function ($query) use ($problemCategoriesIds) {
+        $query = Ticket::whereHas('problemCategory', function ($query) use ($problemCategoriesIds) {
             $query->whereIn('id', $problemCategoriesIds);
-        })->get();
+        });
 
-        // Retourner la vue avec les tickets filtrés
-        return view('tickets.myindex', compact('tickets'));
+        if ($request->has('priority') && $request->priority != '') {
+            $query->whereHas('problemCategory.problem_priority', function ($q) use ($request) {
+                $q->where('code_priority', $request->priority);
+            });
+        }
+
+        $tickets = $query->get();
+
+        // Récupérer les priorités disponibles
+        $priorities = ProblemPriority::all();
+
+        // Retourner la vue avec les tickets filtrés et les priorités
+        return view('tickets.myindex', compact('tickets', 'priorities'));
     }
+    public function verrouillerEnMasse(Request $request)
+{
+    $ticketIds = $request->input('ticket_ids', []);
+    if (!empty($ticketIds)) {
+        Ticket::whereIn('id', $ticketIds)
+            ->where('status', 'Nouveau')
+            ->update(['status' => 'En cours']);
+    }
+
+    return redirect()->route('tickets.myindex')->with('success', 'Les tickets sélectionnés ont été verrouillés avec succès.');
+}
+
+
+
     public function transfer(Request $request, $ticketId)
     {
         $request->validate([

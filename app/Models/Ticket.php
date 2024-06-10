@@ -18,7 +18,9 @@ class Ticket extends Model
         // 'company_id',
         'uploaded_files',
     ];
-
+    protected $casts = [
+        'uploaded_files' => 'array',
+    ];
     // Relation avec l'application
     public function application()
     {
