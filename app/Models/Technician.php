@@ -49,4 +49,9 @@ class Technician extends Model
             ->withPivot('transferred_to')
             ->withTimestamps();
     }
+    public function isAvailable()
+    {
+        // Implémentez votre logique pour vérifier si le technicien est disponible
+        return $this->user->is_active;
+    }
 }

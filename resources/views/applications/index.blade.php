@@ -22,7 +22,15 @@
                 <tr>
                     <td>{{ $application->app_name }}</td>
                     <td>{{ $application->description }}</td>
-                    <td>{{substr($application->unique_code,0,5).'...' }}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <span id="masked-code">{{ substr($application->unique_code, 0, 5) }}...</span>
+                            <span id="actual-code" style="display: none">{{ $application->unique_code }}</span>
+                            <button class="copy-btn btn btn-link" data-clipboard-text="{{ $application->unique_code }}">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </td>
                     <td>{{ $application->app_email }}</td>
                     <td>{{ $application->app_phone }}</td>
                     <td>
@@ -45,4 +53,30 @@
         </table>
     </div>
 </div>
+
+<!-- Script pour la copie dans le presse-papiers -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+<script>
+    // Initialisation de Clipboard.js
+    new ClipboardJS('.copy-btn');
+
+    // Affichage / Masquage du code complet au clic
+    document.querySelectorAll('.copy-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const code = btn.getAttribute('data-clipboard-text');
+            copyToClipboard(code);
+        });
+    });
+
+    // Fonction pour copier dans le presse-papiers
+    function copyToClipboard(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+       // alert('Code copié dans le presse-papiers : ' + text);
+    }
+</script>
 @endsection

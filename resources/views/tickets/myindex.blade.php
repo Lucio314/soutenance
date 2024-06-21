@@ -87,26 +87,31 @@
                                 </td>
                                 <td>{{ $ticket->object }}</td>
                                 <td>{{ $ticket->status }}</td>
-                                <td>
+                                <td style="display: flex;flex-direction:row;gap:4px">
                                     @if ($ticket->status == 'Nouveau')
                                         <form action="{{ route('tickets.handle', ['ticketId' => $ticket->id, 'technicianId' => Auth::user()->technician->id]) }}" method="POST" style="display:inline-block;">
                                             @csrf
-                                            <button type="submit" class="btn btn-primary">
+                                            <button type="submit" class="btn btn-info">
                                                 <i class="bi bi-unlock"></i>
                                             </button>
                                         </form>
                                     @elseif ($ticket->status == 'En cours')
                                         <form action="{{ route('tickets.close', ['ticketId' => $ticket->id, 'technicianId' => Auth::user()->technician->id]) }}" method="POST" style="display:inline-block;">
                                             @csrf
-                                            <button type="submit" class="btn btn-success">
+                                            <button type="submit" class="btn btn-primary">
                                                 <i class="bi bi-lock"></i>
                                             </button>
                                         </form>
                                     @elseif ($ticket->status == 'Terminé')
-                                        <span class="btn btn-secondary">
+                                        <span class="btn btn-success">
                                             <i class="bi bi-check-circle"></i>
                                         </span>
                                     @endif
+
+                                    <a href="{{ route('tickets.show', $ticket->id) }}" class="btn btn-secondary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
                                 </td>
                             </tr>
                         @endforeach

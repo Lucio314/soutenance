@@ -7,10 +7,50 @@ use App\Models\Technician;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Gerer;
-
+use App\Models\Ticket;
+use App\Models\Travailler;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class TechnicianController extends Controller
 {
+    public function acceptTicket($ticket_id)
+    {
+        $ticket = Ticket::findOrFail($ticket_id);
+        $technician = auth()->user()->technician;
+
+        $travailler = Travailler::where('ticket_id', $ticket_id)
+            ->where('transferred_to', $technician->id)
+            ->firstOrFail();
+
+        if ($travailler) {
+            $travailler->update(['transferred_to' => null]);
+            return redirect()->route('technician.dashboard')->with('success', 'Ticket accepted successfully.');
+        } else {
+            return redirect()->route('technician.dashboard')->with('error', 'Unable to accept ticket.');
+        }
+    }
+
+    public function declineTicket($ticket_id)
+    {
+        $ticket = Ticket::findOrFail($ticket_id);
+        $technician = auth()->user()->technician;
+
+        $travailler = Travailler::where('ticket_id', $ticket_id)
+            ->where('transferred_to', $technician->id)
+            ->firstOrFail();
+
+        if ($travailler) {
+            $travailler->delete();
+            $ticket->update(['status' => 'new']);
+            return redirect()->route('technician.dashboard')->with('success', 'Ticket declined successfully.');
+        } else {
+            return redirect()->route('technician.dashboard')->with('error', 'Unable to decline ticket.');
+        }
+    }
     /**
      * Display a listing of the resource.
      *
@@ -32,39 +72,75 @@ class TechnicianController extends Controller
     public function create()
     {
         $company = Auth::user()->company;
-        $problem_categories = ProblemCategory::all();
+
+        // Supposons que chaque application a une relation avec ProblemCategory via une table intermédiaire
+        // Et que l'entreprise a une relation avec ses applications.
+        $problem_categories = ProblemCategory::whereHas('application', function ($query) use ($company) {
+            $query->where('company_id', $company->id);
+        })->get();
+
         // Retourner la vue pour créer un nouveau technicien
         return view('technicians.create', compact('company', 'problem_categories'));
     }
-
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         // Valider les données du formulaire
-        $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'problem_category_id' => 'required|array', // Les catégories doivent être un tableau
-            'problem_category_id.*' => 'exists:problem_categories,id', // Chaque catégorie doit exister
-            'company_id' => 'required|exists:companies,id',
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['string', 'nullable'],
+            'company_id' => ['nullable', 'exists:companies,id'],
+            'problem_category_id' => ['nullable', 'array'],
+            'problem_category_id.*' => ['nullable', 'exists:problem_categories,id'],
         ]);
 
-        // Créer un nouveau technicien avec les données validées
-        $technician = Technician::create([
-            'user_id' => $validatedData['user_id'],
-            'company_id' => $validatedData['company_id'],
+        // Générer un mot de passe aléatoire
+        $password = $request->password;
+
+        // Créer un nouvel utilisateur
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($password),
+            'role' => $request->role
         ]);
 
-        // Attacher les catégories de problèmes au technicien
-        $technician->problemCategories()->attach($validatedData['problem_category_id']);
+        // Si le rôle de l'utilisateur est technicien, créer un technicien et l'associer aux catégories de problèmes
+        if ($request->role == 'technician') {
+            $technician = Technician::create([
+                'user_id' => $user->id,
+                'company_id' => $request->company_id,
+            ]);
 
-        // Rediriger avec un message de succès
+            // Enregistrer les relations entre le technicien et les catégories de problèmes
+            if ($request->has('problem_category_id')) {
+                foreach ($request->problem_category_id as $categoryId) {
+                    Gerer::create([
+                        'technician_id' => $technician->id,
+                        'problem_category_id' => $categoryId,
+                    ]);
+                }
+            }
+
+            // Envoyer un e-mail avec le mot de passe au technicien
+            Mail::send('emails.technician_welcome', ['user' => $user, 'password' => $password], function ($message) use ($user) {
+                $message->to($user->email)
+                    ->subject('Bienvenue en tant que technicien');
+            });
+
+            return redirect()->route('technicians.index')->with('success', 'Technicien créé avec succès et e-mail envoyé.');
+        }
+
         return redirect()->route('technicians.index')->with('success', 'Technicien créé avec succès.');
     }
+
     public function dashboard()
     {
 

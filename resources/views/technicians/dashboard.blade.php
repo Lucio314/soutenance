@@ -19,7 +19,7 @@
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-    
+
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         integrity="sha512-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
@@ -70,12 +70,12 @@
                     <div class="ms-3">
 
                         <h6 class="mb-0">{{ Auth::user()->name}}</h6>
-                        <span>Admin</span>
+                        <span>Technicien</span>
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="{{route('companies.dashboard')}}"
-                        class="nav-item nav-link @if(Request::is('companies/dashboard*')) active @endif">
+                    <a href="{{route('technicians.dashboard')}}"
+                        class="nav-item nav-link @if(Request::is('technicians/dashboard*')) active @endif">
                         <i class="fa fa-tachometer-alt me-2"></i>Dashboard
                     </a>
 
@@ -189,6 +189,31 @@
                 </div>
             </nav>
             <!-- Navbar End -->
+            <!-- Messages de succès et d'échec -->
+            @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
+            @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
+            @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
 
             @yield('content')
             <!-- Content End -->

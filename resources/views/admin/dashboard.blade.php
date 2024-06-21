@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Company Dashboard</title>
+    <title>Admin Dashboard</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -53,7 +53,7 @@
             <nav class="navbar bg-light navbar-light">
                 <a href="#" class="navbar-brand mx-4 mb-3">
                     <h3 class="text-primary">
-                        <i class="bi bi-building me-2"></i>{{ Auth::user()->company->cpn_email}}
+                        <i class="bi bi-building me-2"></i>{{ Auth::user()->name}}
                     </h3>
                 </a>
 
@@ -72,25 +72,22 @@
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="{{route('companies.dashboard')}}"
-                        class="nav-item nav-link @if(Request::is('companies/dashboard*')) active @endif">
+                    <a href="{{route('admin.dashboard')}}"
+                        class="nav-item nav-link @if(Request::is('admin/dashboard*')) active @endif">
                         <i class="fa fa-tachometer-alt me-2"></i>Dashboard
                     </a>
-                    <a href="{{ route('applications.index') }}"
-                        class="nav-item nav-link @if(Request::is('applications*')) active @endif">
-                        <i class="bi bi-layers me-2"></i>My App
+
+                    <a href="{{ route('admin.companies') }}"
+                        class="nav-item nav-link @if(Request::is('admin/companies')) active @endif">
+                        <i class="bi bi-layers me-2"></i>List Companies
                     </a>
-                    <a href="{{route('problem_categories.index')}}"
-                        class="nav-item nav-link @if(Request::is('problem_categories*')) active @endif">
-                        <i class="fa fa-exclamation-triangle me-2"></i>My Problem Apps
+                    <a href="{{ route('admin.technicians') }}"
+                        class="nav-item nav-link @if(Request::is('admin/technicians')) active @endif">
+                        <i class="fa fa-users me-2"></i>All Technicians
                     </a>
-                    <a href="{{ route('technicians.index') }}"
-                        class="nav-item nav-link @if(Request::is('technicians*')) active @endif">
-                        <i class="fa fa-users me-2"></i>My Technicians
-                    </a>
-                    <a href="{{route('tickets.index')}}"
-                        class="nav-item nav-link @if(Request::is('tickets*')) active @endif">
-                        <i class="fa fa-ticket-alt me-2"></i>All Tickets
+                    <a href="{{route('admin.tickets')}}"
+                        class="nav-item nav-link @if(Request::is('admin/tickets')) active @endif">
+                        <i class="fa fa-ticket-alt me-2"></i>Details Tickets
                     </a>
                 </div>
 
@@ -174,7 +171,7 @@
                             <hr class="dropdown-divider">
                             <a href="#" class="dropdown-item">
                                 <h6 class="fw-normal mb-0">Password changed</h6>
-                                <small>10 minutes ago</small>
+                                <small>15 minutes ago</small>
                             </a>
                             <hr class="dropdown-divider">
                             <a href="#" class="dropdown-item text-center">See all notifications</a>
@@ -247,6 +244,21 @@
         <!-- Template Javascript -->
 
         <script src="{{asset('assets_company/js/main.js')}}"></script>
+
+
+
+
+
+        <script>
+            function toggleAction(companyId) {
+                var icon = document.getElementById("toggleIcon-" + companyId);
+                if (confirm('Etes-vous sûr de vouloir activer/désactiver les options de cette entreprise ?')) {
+                    icon.classList.toggle("fa-toggle-on");
+                    icon.classList.toggle("fa-toggle-off");
+                    icon.classList.toggle("text-primary");
+                }
+            }
+        </script>
 </body>
 
 </html>

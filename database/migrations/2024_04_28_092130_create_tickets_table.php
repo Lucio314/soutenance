@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('problem_category_id')->constrained('problem_categories')->onDelete('cascade');
             $table->string('object');
             $table->text('content');
-            $table->enum('status', ['Nouveau', 'Terminé', 'En cours'])->default('Nouveau');
+            $table->enum('status', ['Nouveau', 'Terminé', 'En cours','Annuler'])->default('Nouveau');
             $table->json('uploaded_files')->nullable();
             $table->timestamps();
         });

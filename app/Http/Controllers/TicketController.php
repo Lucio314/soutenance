@@ -8,8 +8,11 @@ use App\Models\ProblemCategory;
 use App\Models\ProblemPriority;
 use App\Models\Technician;
 use App\Models\Ticket;
+use App\Notifications\TicketTransferred;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TicketAssigned;
 
 class TicketController extends Controller
 {
@@ -64,20 +67,30 @@ class TicketController extends Controller
     public function myindex(Request $request)
     {
         $technician = Auth::user()->technician;
+
+        // Récupérer les IDs des catégories de problèmes que le technicien gère
         $problemCategoriesIds = Gerer::where('technician_id', $technician->id)
             ->pluck('problem_category_id')
             ->toArray();
 
+        // Construire la requête pour récupérer les tickets
         $query = Ticket::whereHas('problemCategory', function ($query) use ($problemCategoriesIds) {
             $query->whereIn('id', $problemCategoriesIds);
         });
 
+        // Filtrer par priorité si le paramètre est présent dans la requête
         if ($request->has('priority') && $request->priority != '') {
             $query->whereHas('problemCategory.problem_priority', function ($q) use ($request) {
                 $q->where('code_priority', $request->priority);
             });
         }
 
+        // Exclure les tickets sur lesquels le technicien a déjà travaillé
+        $query->whereDoesntHave('technicians', function ($q) use ($technician) {
+            $q->where('technician_id', $technician->id);
+        });
+
+        // Obtenir les tickets filtrés
         $tickets = $query->get();
 
         // Récupérer les priorités disponibles
@@ -86,35 +99,62 @@ class TicketController extends Controller
         // Retourner la vue avec les tickets filtrés et les priorités
         return view('tickets.myindex', compact('tickets', 'priorities'));
     }
+
     public function verrouillerEnMasse(Request $request)
-{
-    $ticketIds = $request->input('ticket_ids', []);
-    if (!empty($ticketIds)) {
-        Ticket::whereIn('id', $ticketIds)
-            ->where('status', 'Nouveau')
-            ->update(['status' => 'En cours']);
+    {
+        $ticketIds = $request->input('ticket_ids', []);
+        if (!empty($ticketIds)) {
+            Ticket::whereIn('id', $ticketIds)
+                ->where('status', 'Nouveau')
+                ->update(['status' => 'En cours']);
+        }
+
+        return redirect()->route('tickets.myindex')->with('success', 'Les tickets sélectionnés ont été verrouillés avec succès.');
     }
 
-    return redirect()->route('tickets.myindex')->with('success', 'Les tickets sélectionnés ont été verrouillés avec succès.');
-}
 
+    public function show($id)
+    {
+        // Récupérer le ticket avec ses relations nécessaires
+        $ticket = Ticket::with(['application', 'problemCategory'])->findOrFail($id);
 
+        // Récupérer tous les techniciens
+        $technicians = Technician::all();
 
-    public function transfer(Request $request, $ticketId)
+        // Passer le ticket et les techniciens à la vue
+        return view('tickets.show', compact('ticket', 'technicians'));
+    }
+
+    public function transfer(Request $request, $id)
     {
         $request->validate([
             'technician_id' => 'required|exists:technicians,id',
         ]);
 
-        $ticket = Ticket::findOrFail($ticketId);
-        $currentTechnician = auth()->user()->technician;
+        $ticket = Ticket::findOrFail($id);
+        $technician = Technician::findOrFail($request->technician_id);
+        $currentTechnician = Auth::user()->technician;
 
-        $ticket->technicians()->updateExistingPivot($currentTechnician->id, [
-            'transferred_to' => $request->technician_id,
-        ]);
+        // Vérifier que le technicien connecté est déjà en train de travailler sur le ticket
+        if (!$ticket->technicians->contains($currentTechnician)) {
+            return redirect()->route('tickets.show', $ticket->id)->with('error', 'Vous ne travaillez pas sur ce ticket.');
+        }
 
-        return redirect()->back()->with('success', 'Ticket transféré avec succès.');
-    }
+        // Vérifier si le technicien de destination est disponible
+        if ($technician->isAvailable()) {
+            // Transférer le ticket
+            $ticket->technicians()->attach($technician->id, ['transferred_to' => $technician->id]);
+
+            // Notifier le technicien
+            $technician->notify(new TicketTransferred($ticket));
+
+            return redirect()->route('tickets.show', $ticket->id)->with('success', 'Ticket transféré avec succès.');
+        } else {
+            return redirect()->route('tickets.show', $ticket->id)->with('error', 'Le technicien n\'est pas disponible.');
+        }
+    } // Assurez-vous d'importer le mailable approprié
+
+
     public function handleTicket(Request $request, $ticketId, $technicianId)
     {
         $ticket = Ticket::findOrFail($ticketId);
@@ -126,7 +166,7 @@ class TicketController extends Controller
             ->toArray();
 
         if (!in_array($ticket->problem_category_id, $problemCategoriesIds)) {
-            return redirect()->back()->withErrors(['error' => 'Unauthorized to handle this ticket']);
+            return redirect()->back()->withErrors(['error' => 'Non autorisé à traiter ce ticket.']);
         }
 
         // Mettre à jour le statut du ticket
@@ -146,8 +186,16 @@ class TicketController extends Controller
             ]);
         }
 
+        // Envoyer un email au client
+        if ($ticket->client && $ticket->client->email) {
+            $clientEmail = $ticket->client->email; // Assurez-vous que la relation 'client' est définie dans le modèle Ticket
+            Mail::to($clientEmail)->send(new TicketAssigned($ticket, $technician));
+        }
+
         return redirect()->route('tickets.show', $ticketId)->with('success', 'Ticket en cours de traitement par le technicien.');
     }
+
+
 
     /**
      * Close a ticket by a technician.
@@ -167,7 +215,7 @@ class TicketController extends Controller
         }
 
         // Mettre à jour le statut du ticket
-        $ticket->status = 'terminé';
+        $ticket->status = 'Terminé';
         $ticket->save();
 
         // Enregistrer les détails de la clôture dans la table pivot Travailler
@@ -230,10 +278,7 @@ class TicketController extends Controller
      * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function show(Ticket $ticket)
-    {
-        return view('tickets.show', compact('ticket'));
-    }
+
 
     /**
      * Show the form for editing the specified resource.

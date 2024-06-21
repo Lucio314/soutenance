@@ -15,7 +15,7 @@
 <body>
     <div class="container">
         <div class="right-section">
-            <form action="{{route('register')}}" class="sign-up-form" method="post">
+            <form action="{{route('technicians.store')}}" class="sign-up-form" method="post">
                 @csrf
                 <h2 class="title">Register Technician</h2>
                 <div class="input-field">
@@ -38,9 +38,10 @@
                 <div class="input-field">
                     <i class="fas fa-align-left"></i>
                     <select name="problem_category_id[]" multiple required>
-                        <option  disabled>Problem Categories</option>
+                        <option disabled>Problem Categories</option>
                         @foreach($problem_categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
+
                         @endforeach
                     </select>
                 </div>

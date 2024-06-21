@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\JTicketController;
+use App\Http\Controllers\Api\AnnulerTicketController;
+use App\Http\Controllers\Api\ApiTickets;
 use App\Http\Controllers\Api\TicketController;
 use App\Models\Technician;
 use App\Notifications\NewTicketNotification;
@@ -26,12 +27,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::middleware('auth.apikey')->name('api.')->group(function () {
-//     Route::resource('jtickets', JTicketController::class);
-// });
 Route::middleware('auth.apikey')->name('api.')->group(function () {
+    // Route::get('/tickets/create', [TicketController::class, 'create'])->name('create');
+    //Route::post('/tickets/store', [TicketController::class, 'store'])->name('store');
+    //Route::get('/tickets/show', [TicketController::class, 'show'])->name('show');
     Route::resource('tickets', TicketController::class);
-
+    Route::post('/ticketsAnnuler', [AnnulerTicketController::class, 'annuler']);
 });
 Route::get('/test-notification', function () {
     $ticket = App\Models\Ticket::find(34); // Récupérez un ticket existant pour le test

@@ -14,8 +14,9 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 
-class TicketController extends Controller
+class ApiTickets extends Controller
 {
+
     public function create(Request $request)
     {
         $apiKey = $request->header('api_key');
@@ -29,6 +30,8 @@ class TicketController extends Controller
 
         return response()->json(['problemCategories' => $problemCategories], 200);
     }
+
+
 
 
 
@@ -68,6 +71,10 @@ class TicketController extends Controller
         $uploadedFilesPaths = [];
 
         if ($request->hasFile('uploaded_files')) {
+            // foreach ($request->file('uploaded_files') as $file) {
+            //     $path = $file->store('uploads', 'public');
+            //     $uploadedFilesPaths[] = $path;
+            // }
             foreach ($request->file('uploaded_files') as $image) {
                 $path = $image->store('public/images');
                 $uploadedFilesPaths[] = $path;
@@ -81,74 +88,34 @@ class TicketController extends Controller
 
         $ticket->save();
 
-        // Obtenez les techniciens concernés par la catégorie de problème
-        $technicians = Technician::whereHas('problemCategories', function ($query) use ($ticket) {
-            $query->where('problem_categories.id', $ticket->problem_category_id);
-        })->get();
-
-        // Envoyez les e-mails aux techniciens
-        foreach ($technicians as $technician) {
-            $user = $technician->user; // Obtenez l'utilisateur lié au technicien
-            if ($user && $user->email) {
-                Mail::to($user->email)->send(new NewTicketMail($ticket));
-            }
-        }
-
         return response()->json(['message' => 'Ticket créé avec succès', 'ticket' => $ticket]);
     }
 
 
-    /**
-     * Display the specified ticket.
-     *
-     * @param Ticket $ticket
-     * @return \Illuminate\Http\Response
-     */
-
-
-    public function show(Request $request)
+    public function showTicket(Request $request)
     {
         $email = $request->header('client_email');
-        $tickets = Ticket::where('client_email', $email)
-            ->whereIn('status', ['Nouveau', 'En cours'])
-            ->where('object', 'plainte')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $ticket = Ticket::where('client_email', $email)->orderBy('created_at', 'desc')->first();
         $nbre_total_ticket = Ticket::where('client_email', $email)->count();
         $nbre_suggestion = Ticket::where('client_email', $email)->where('object', 'Suggestion')->count();
         $nbre_en_cours = Ticket::where('client_email', $email)->where('status', 'En cours')->count();
 
-        if ($tickets) {
+        if ($ticket) {
             return response()->json([
                 'nombre_total_ticket' => $nbre_total_ticket,
                 'nombre_suggestion' => $nbre_suggestion,
                 'nombre_en_cours' => $nbre_en_cours,
-                'tickets' => $tickets,
+                'category' => $ticket->problemCategory->name,
+                'ticket' => $ticket,
             ], 200);
         } else {
             return response()->json([
                 'nombre_total_ticket' => $nbre_total_ticket,
                 'nombre_suggestion' => $nbre_suggestion,
                 'nombre_en_cours' => $nbre_en_cours,
-                'tickets' => null,
+                'category' => null,
+                'ticket' => null,
             ], 200);
         }
-    }
-
-
-    /**
-     * Remove the specified ticket from storage.
-     *
-     * @param Ticket $ticket
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Ticket $ticket)
-    {
-        if (!$ticket) {
-            return response()->json(['error' => 'Ticket not found'], 404);
-        }
-
-        $ticket->delete();
-        return response()->json(['message' => 'Ticket deleted successfully'], 200);
     }
 }

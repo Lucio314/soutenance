@@ -93,7 +93,7 @@
             <textarea id="content" name="content" placeholder="Contenu du ticket" required></textarea><br>
 
             <label for="uploaded_files">Fichiers joints:</label>
-            <input type="file" id="uploaded_files" name="uploaded_files[]" multiple><br>
+            <input type="file" id="uploaded_files" name="uploaded_files[]" accept="image/jpeg,image/png,image/gif" multiple><br>
 
             <button type="submit">Enregistrer</button>
         </form>
