@@ -77,7 +77,7 @@
                     <h3>Transférer le Ticket</h3>
                     <form action="{{ route('tickets.transfer', $ticket->id) }}" method="POST">
                         @csrf
-                        <div class="form-group">
+                        <div class="form-group col-md-8">
                             <label for="technician_id">Sélectionner un technicien:</label>
                             <select name="technician_id" id="technician_id" class="form-control">
                                 @foreach($technicians as $technician)
@@ -85,7 +85,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Transférer</button>
+                        <button type="submit" class="btn btn-primary col-md-4">Transférer</button>
                     </form>
                 </div>
             </div>
@@ -102,7 +102,86 @@
                 </div>
             </div>
             @endif
+
+            <hr>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h3>Échanges avec le client</h3>
+                    <ul class="chat-box">
+                        @if ($ticket->comments && count($ticket->comments) > 0)
+                            @foreach ($ticket->comments->reverse() as $comment)
+                                <li class="chat-message {{ $comment->is_technician ? 'technician' : 'client' }}">
+                                    <div class="message-content">
+                                        <p>{{ $comment->body }}</p>
+                                        <span class="message-time">{{ $comment->created_at->format('d/m/Y H:i') }}</span>
+                                    </div>
+                                </li>
+                            @endforeach
+                        @else
+                            <li>Aucun commentaire trouvé.</li>
+                        @endif
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h3>Ajouter un commentaire</h3>
+                    <form action="{{ route('tickets.comments.store', $ticket->id) }}" method="POST">
+                        @csrf
+                        <div class="input-group">
+                            <input type="text" name="body" class="form-control" placeholder="Ajouter un commentaire">
+                            <button type="submit" class="btn btn-primary">Poster</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
+
+<style>
+    .chat-box {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .chat-message {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        max-width: 70%;
+    }
+
+    .chat-message .message-content {
+        background-color: #dcf8c6;
+        border-radius: 10px;
+        padding: 10px;
+        word-wrap: break-word;
+        position: relative;
+    }
+
+    .chat-message.technician .message-content {
+        background-color: #bee5eb;
+        align-self: flex-end;
+    }
+
+    .chat-message.client .message-content {
+        background-color: #dcf8c6;
+        align-self: flex-start;
+    }
+
+    .message-time {
+        font-size: 0.8em;
+        color: #666;
+        position: absolute;
+        bottom: -15px;
+        right: 5px;
+    }
+</style>
+
 @endsection

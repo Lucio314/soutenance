@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\NewTicketMail;
 use App\Models\Ticket;
 use App\Models\Application;
+use App\Models\Comment;
 use App\Models\ProblemCategory;
 use App\Models\Technician;
 use App\Notifications\NewTicketNotification;
@@ -135,7 +136,38 @@ class TicketController extends Controller
         }
     }
 
+    public function storeComment(Request $request)
+    {
+        // Valider les données du formulaire
+        $request->validate([
+            'body' => 'required|string',
+            'is_technician' => 'required|boolean',
+        ]);
 
+        // Récupérer l'ID du ticket et l'e-mail du client à partir des headers
+        $ticketId = $request->header('ticket_id');
+        $clientEmail = $request->header('client_email');
+
+        // Vérifier que l'ID du ticket est présent et valide
+        if (!$ticketId || !is_numeric($ticketId)) {
+            return response()->json(['error' => 'ID de ticket invalide dans l\'en-tête'], 400);
+        }
+
+        // Trouver le ticket par son ID
+        $ticket = Ticket::findOrFail($ticketId);
+
+        // Créer un nouveau commentaire
+        $comment = new Comment();
+        $comment->body = $request->input('body');
+        $comment->is_technician = $request->input('is_technician');
+        $comment->client_email = $clientEmail;
+
+        // Associer le commentaire au ticket
+        $ticket->comments()->save($comment);
+
+        // Réponse JSON en cas de succès
+        return response()->json(['message' => 'Commentaire ajouté avec succès'], 201);
+    }
     /**
      * Remove the specified ticket from storage.
      *

@@ -43,4 +43,10 @@ class Ticket extends Model
             ->withPivot('transferred_to', 'created_at', 'updated_at')
             ->withTimestamps();
     }
+        // Relation avec les commentaires
+        public function comments()
+        {
+            return $this->hasMany(Comment::class);
+        }
+
 }

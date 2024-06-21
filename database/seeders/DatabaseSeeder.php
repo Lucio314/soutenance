@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Ticket;
+
 use Illuminate\Database\Seeder;
 
 
@@ -26,6 +27,9 @@ class DatabaseSeeder extends Seeder
         //     ApplicationSeeder::class,
         //     ProblemPrioritySeeder::class, ProblemCategorySeeder::class, TechnicianSeeder::class, TicketSeeder::class,
         // ]);
-        Ticket::factory()->count(10)->create();
+        // Ticket::factory()->count(10)->create();
+        $this->call([
+            CommentSeeder::class
+        ]);
     }
 }

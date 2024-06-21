@@ -12,6 +12,7 @@ use App\Http\Controllers\TravaillerController;
 use App\Models\Technician;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChartController;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/admin/companies/{company}/toggle', [AdminController::class, 'toggleActive'])->name('admin.company.toggle');
 
     Route::post('tickets/{id}/transfer', [TicketController::class, 'transfer'])->name('tickets.transfer');
+    Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])->name('tickets.comments.store');
 
     Route::post('technician/tickets/{id}/accept', [TechnicianController::class, 'acceptTicket'])->name('technician.acceptTicket');
     Route::post('technician/tickets/{id}/decline', [TechnicianController::class, 'declineTicket'])->name('technician.declineTicket');
