@@ -77,7 +77,7 @@
                     <h3>Transférer le Ticket</h3>
                     <form action="{{ route('tickets.transfer', $ticket->id) }}" method="POST">
                         @csrf
-                        <div class="form-group col-md-8">
+                        <div class="form-group ">
                             <label for="technician_id">Sélectionner un technicien:</label>
                             <select name="technician_id" id="technician_id" class="form-control">
                                 @foreach($technicians as $technician)
@@ -85,7 +85,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary col-md-4">Transférer</button>
+                        <button type="submit" class="btn btn-primary ">Transférer</button>
                     </form>
                 </div>
             </div>
@@ -105,6 +105,12 @@
 
             <hr>
 
+            @php
+            $currentTechnician = Auth::user()->technician;
+            $isAssignedTechnician = $ticket->technicians->contains($currentTechnician);
+        @endphp
+
+        @if (true)
             <div class="row mb-3">
                 <div class="col-md-12">
                     <h3>Échanges avec le client</h3>
@@ -137,6 +143,7 @@
                     </form>
                 </div>
             </div>
+        @endif
 
         </div>
     </div>

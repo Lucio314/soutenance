@@ -18,6 +18,7 @@ class Travailler extends Model
         'technician_id',
         'ticket_id',
         'transferred_to',
+        'is_tranferred'
     ];
 
     public $timestamps = true;

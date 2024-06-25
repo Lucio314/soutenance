@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\AnnulerTicketController;
+use App\Http\Controllers\Api\AnnulerController;
 use App\Http\Controllers\Api\ApiTickets;
 use App\Http\Controllers\Api\TicketController;
 use App\Models\Technician;
@@ -32,9 +32,8 @@ Route::middleware('auth.apikey')->name('api.')->group(function () {
     //Route::post('/tickets/store', [TicketController::class, 'store'])->name('store');
     //Route::get('/tickets/show', [TicketController::class, 'show'])->name('show');
     Route::resource('tickets', TicketController::class);
-    Route::post('/ticketsAnnuler', [AnnulerTicketController::class, 'annuler']);
+    Route::post('/ticketsAnnuler', [AnnulerController::class, 'annuler']);
     Route::post('/tickets/{id}/comments', [TicketController::class, 'storeComment'])->name('tickets.comments.store');
-
 });
 Route::get('/test-notification', function () {
     $ticket = App\Models\Ticket::find(34); // Récupérez un ticket existant pour le test

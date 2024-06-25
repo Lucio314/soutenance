@@ -37,6 +37,6 @@ class TicketAssigned extends Mailable
     public function build()
     {
         return $this->subject('Votre ticket est en cours de traitement')
-                    ->view('emails.ticket-handled');
+                    ->view('tickets.ticket-handled');
     }
 }

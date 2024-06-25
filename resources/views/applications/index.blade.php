@@ -2,8 +2,8 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Index of Applications</h1>
-    <a href="{{ route('applications.create') }}" class="btn btn-primary mb-3">Add Application</a>
+    <h1 class="mb-4">Liste des Applications</h1>
+    <a href="{{ route('applications.create') }}" class="btn btn-primary mb-3">Ajouter une application</a>
 
     <div class="table-responsive">
         <table class="table table-bordered table-striped">

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>Company Dashboard</title>
@@ -23,7 +22,6 @@
         integrity="sha512-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
         crossorigin="anonymous" />
 
-
     <!-- Libraries Stylesheet -->
     <link href="{{asset('assets_company/lib/owlcarousel/assets/owl.carousel.min.css')}}" rel="stylesheet">
     <link href="{{asset('assets_company/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css')}}" rel="stylesheet" />
@@ -33,7 +31,6 @@
 
     <!-- Template Stylesheet -->
     <link href="{{asset('assets_company/css/style.css')}}" rel="stylesheet">
-
 </head>
 
 <body>
@@ -47,13 +44,12 @@
         </div>
         <!-- Spinner End -->
 
-
         <!-- Sidebar Start -->
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-light navbar-light">
                 <a href="#" class="navbar-brand mx-4 mb-3">
                     <h3 class="text-primary">
-                        <i class="bi bi-building me-2"></i>{{ Auth::user()->company->cpn_email}}
+                        <i class="bi bi-building me-2"></i>{{ Auth::user()->company->cpn_name}}
                     </h3>
                 </a>
 
@@ -66,7 +62,6 @@
                         </div>
                     </div>
                     <div class="ms-3">
-
                         <h6 class="mb-0">{{ Auth::user()->name}}</h6>
                         <span>Admin</span>
                     </div>
@@ -78,11 +73,11 @@
                     </a>
                     <a href="{{ route('applications.index') }}"
                         class="nav-item nav-link @if(Request::is('applications*')) active @endif">
-                        <i class="bi bi-layers me-2"></i>My App
+                        <i class="bi bi-layers me-2"></i>Mes Applications
                     </a>
                     <a href="{{route('problem_categories.index')}}"
                         class="nav-item nav-link @if(Request::is('problem_categories*')) active @endif">
-                        <i class="fa fa-exclamation-triangle me-2"></i>My Problem Apps
+                        <i class="fa fa-exclamation-triangle me-2"></i>Les problemes d'applications
                     </a>
                     <a href="{{ route('technicians.index') }}"
                         class="nav-item nav-link @if(Request::is('technicians*')) active @endif">
@@ -90,15 +85,12 @@
                     </a>
                     <a href="{{route('tickets.index')}}"
                         class="nav-item nav-link @if(Request::is('tickets*')) active @endif">
-                        <i class="fa fa-ticket-alt me-2"></i>All Tickets
+                        <i class="fa fa-ticket-alt me-2"></i>Tous les tickets
                     </a>
                 </div>
-
-
             </nav>
         </div>
         <!-- Sidebar End -->
-
 
         <!-- Content Start -->
         <div class="content">
@@ -194,11 +186,11 @@
                                 <button type="submit" class="dropdown-item">Log out</button>
                             </form>
                         </div>
-
                     </div>
                 </div>
             </nav>
             <!-- Navbar End -->
+
             <!-- Messages de succès et d'échec -->
             @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -225,7 +217,121 @@
             </div>
             @endif
 
+            @hasSection('content')
             @yield('content')
+            @else
+            <h1>Dashboard</h1>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Évolution des tickets</h5>
+                                <canvas id="ticketEvolutionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Techniciens avec le plus de tickets résolus</h5>
+                                <canvas id="technicianStatsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Problèmes les plus courants</h5>
+                                <canvas id="issueStatsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Problèmes sur les applications</h5>
+                                <canvas id="applicationStatsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                // Évolution des tickets (graphique en ligne)
+                var ticketEvolutionCtx = document.getElementById('ticketEvolutionChart').getContext('2d');
+                new Chart(ticketEvolutionCtx, {
+                    type: 'line',
+                    data: {!! json_encode($ticketEvolution) !!},
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Techniciens avec le plus de tickets résolus (graphique en barres)
+                var technicianStatsCtx = document.getElementById('technicianStatsChart').getContext('2d');
+                new Chart(technicianStatsCtx, {
+                    type: 'bar',
+                    data: {!! json_encode($technicianStats) !!},
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Problèmes les plus courants (graphique en secteurs)
+                var issueStatsCtx = document.getElementById('issueStatsChart').getContext('2d');
+                new Chart(issueStatsCtx, {
+                    type: 'pie',
+                    data: {!! json_encode($issueStats) !!},
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Problèmes les plus courants'
+                            }
+                        }
+                    }
+                });
+
+                // Problèmes sur les applications (graphique en doughnut)
+                var applicationStatsCtx = document.getElementById('applicationStatsChart').getContext('2d');
+                new Chart(applicationStatsCtx, {
+                    type: 'doughnut',
+                    data: {!! json_encode($applicationStats) !!},
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Problèmes sur les applications'
+                            }
+                        }
+                    }
+                });
+            </script>
+
+            @endif
             <!-- Content End -->
 
             <!-- Back to Top -->
@@ -233,7 +339,6 @@
         </div>
 
         <!-- JavaScript Libraries -->
-        <!-- Assurez-vous d'inclure jQuery et Bootstrap JavaScript -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="{{asset('assets_company/lib/chart/chart.min.js')}}"></script>
@@ -245,8 +350,6 @@
         <script src="{{asset('assets_company/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js')}}"></script>
 
         <!-- Template Javascript -->
-
         <script src="{{asset('assets_company/js/main.js')}}"></script>
 </body>
-
 </html>

@@ -2,8 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Index of Companies</h1>
-    <h4>List</h4>
+    <h2 class="mb-4"><em>Listes des Companies</em></h2>
 
     <div class="table-responsive">
         <table class="table table-bordered table-striped">
@@ -31,8 +30,10 @@
                         <form action="{{ route('admin.company.toggle', $company) }}" method="POST" class="d-inline">
                             @csrf
                             @method('PATCH')
-                            <button type="submit" id="toggleButton-{{ $company->id }}" class="toggle-button" style="border: none; background: none;">
-                                <i id="toggleIcon-{{ $company->id }}" class="fas {{ $company->is_active ? 'fa-toggle-on text-primary' : 'fa-toggle-off' }}"></i>
+                            <button type="submit" id="toggleButton-{{ $company->id }}" class="toggle-button"
+                                style="border: none; background: none;">
+                                <i id="toggleIcon-{{ $company->id }}"
+                                    class="fas {{ $company->is_active ? 'fa-toggle-on text-primary' : 'fa-toggle-off' }}"></i>
                             </button>
                         </form>
                     </td>
@@ -43,5 +44,3 @@
     </div>
 </div>
 @endsection
-
-

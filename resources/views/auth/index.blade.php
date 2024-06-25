@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{{asset('assets/css/style.css')}}" />
-    <title>Sign in & Sign up Form</title>
+    <title>Inscription et Connexion</title>
 </head>
 
 <body>
@@ -22,7 +22,7 @@
                 @endif
                 <form action="{{route('login')}}" class="sign-in-form" method="POST">
                     @csrf
-                    <h2 class="title">Sign in</h2>
+                    <h2 class="title">Se connecter</h2>
                     <div class="input-field">
                         <i class="fas fa-user"></i>
                         <input type="email" name="email" value="{{old('email','')}}" placeholder="Email" />
@@ -32,12 +32,12 @@
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
-                        <input type="password" name="password" placeholder="Password" />
+                        <input type="password" name="password" placeholder="mot de passe" />
                     </div>
-                    <a href="{{ route('password.request') }}">Forgot Your Password?</a>
+                    <a href="{{ route('password.request') }}">Mot de passe oublié?</a>
 
-                    <input type="submit" value="Login" class="btn solid" />
-                    <p class="social-text">Or Sign in with social platforms</p>
+                    <input type="submit" value="Se connecter" class="btn solid" />
+                    <p class="social-text">Se connecter une plateforme sociale</p>
                     <div class="social-media">
                         <a href="#" class="social-icon">
                             <i class="fab fa-facebook-f"></i>
@@ -55,10 +55,10 @@
                 </form>
                 <form action="{{route('register')}}" class="sign-up-form" method="post">
                     @csrf
-                    <h2 class="title">Sign up</h2>
+                    <h2 class="title">S'inscrire</h2>
                     <div class="input-field">
                         <i class="fas fa-user"></i>
-                        <input type="text" name="name" value="{{old('name','')}}" placeholder="Username" autofocus />
+                        <input type="text" name="name" value="{{old('name','')}}" placeholder="Nom" autofocus />
                     </div>
                     <div class="input-field">
                         <i class="fas fa-envelope"></i>
@@ -66,14 +66,15 @@
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
-                        <input type="password" name="password" placeholder="Password" />
+                        <input type="password" name="password" placeholder="mot de passe" />
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
-                        <input id="password_confirmation" type="password" name="password_confirmation" placeholder="Confirm password" required />
+                        <input id="password_confirmation" type="password" name="password_confirmation"
+                            placeholder="Confirmer mot de passe" required />
                     </div>
-                    <input type="submit" class="btn" value="Sign up" />
-                    <p class="social-text">Or Sign up with social platforms</p>
+                    <input type="submit" class="btn" value="S'inscrire" />
+                    <p class="social-text">Ou s'inscrire avec une platforme sociale</p>
                     <div class="social-media">
                         <a href="#" class="social-icon">
                             <i class="fab fa-facebook-f"></i>
@@ -95,26 +96,24 @@
         <div class="panels-container">
             <div class="panel left-panel">
                 <div class="content">
-                    <h3>New here ?</h3>
+                    <h3>Nouveau ici?</h3>
                     <p>
-                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Debitis,
-                        ex ratione. Aliquid!
+                        Cliquer sur s'inscrire pour creer un nouveau compte utilisateur.
                     </p>
                     <button class="btn transparent" id="sign-up-btn">
-                        Sign up
+                        S'inscrire
                     </button>
                 </div>
                 <img src="{{asset('assets/img/log.svg')}}" class="image" alt="" />
             </div>
             <div class="panel right-panel">
                 <div class="content">
-                    <h3>One of us ?</h3>
+                    <h3>De retour ?</h3>
                     <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum
-                        laboriosam ad deleniti.
+                        Vueiilez inserer vos informations pour acceder a votre compte
                     </p>
                     <button class="btn transparent" id="sign-in-btn">
-                        Sign in
+                        Se connecter
                     </button>
                 </div>
                 <img src="{{asset('assets/img/register.svg')}}" class="image" alt="" />

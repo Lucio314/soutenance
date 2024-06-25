@@ -17,7 +17,7 @@
         <div class="right-section">
             <form action="{{ route('companies.store') }}" class="sign-up-form" method="post">
                 @csrf
-                <h2 class="title">Register Company</h2>
+                <h2 class="title">Enregister une compagnie</h2>
                 <div class="input-field">
                     <i class="fas fa-user"></i>
                     <input type="text" name="code" placeholder="Company Code" required />
@@ -40,7 +40,7 @@
                 </div>
 
                 <input type="hidden" name="user_id" value="{{ Auth::id() }}" />
-                <input type="submit" class="btn" value="Register" />
+                <input type="submit" class="btn" value="Enregistrer" />
             </form>
         </div>
     </div>

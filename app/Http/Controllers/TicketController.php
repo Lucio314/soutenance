@@ -86,9 +86,9 @@ class TicketController extends Controller
         }
 
         // Exclure les tickets sur lesquels le technicien a déjà travaillé
-        $query->whereDoesntHave('technicians', function ($q) use ($technician) {
-            $q->where('technician_id', $technician->id);
-        });
+        // $query->whereDoesntHave('technicians', function ($q) use ($technician) {
+        //     $q->where('technician_id', $technician->id);
+        // });
 
         // Obtenir les tickets filtrés
         $tickets = $query->get();
@@ -187,8 +187,8 @@ class TicketController extends Controller
         }
 
         // Envoyer un email au client
-        if ($ticket->client && $ticket->client->email) {
-            $clientEmail = $ticket->client->email; // Assurez-vous que la relation 'client' est définie dans le modèle Ticket
+        if ($ticket && $ticket->client_email) {
+            $clientEmail = $ticket->client_email; // Assurez-vous que la relation 'client' est définie dans le modèle Ticket
             Mail::to($clientEmail)->send(new TicketAssigned($ticket, $technician));
         }
 
