@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
-    <title>Company Dashboard</title>
+    <title>Dashboard-Compagnie</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -57,13 +58,12 @@
                     <div class="position-relative">
                         <img class="rounded-circle" src="{{asset('assets_company/img/user.jpg')}}" alt=""
                             style="width: 40px; height: 40px;">
-                        <div
-                            class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1">
+                        <div class="bg-success rounded-circle border border-white position-absolute end-0 bottom-0 p-1">
                         </div>
                     </div>
                     <div class="ms-3">
                         <h6 class="mb-0">{{ Auth::user()->name}}</h6>
-                        <span>Admin</span>
+                        <span>Manager</span>
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
@@ -233,14 +233,14 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-6 mb-4">
+                    {{-- <div class="col-lg-6 mb-4">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Techniciens avec le plus de tickets résolus</h5>
                                 <canvas id="technicianStatsChart"></canvas>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="col-lg-6 mb-4">
                         <div class="card">
@@ -265,7 +265,7 @@
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
                 // Évolution des tickets (graphique en ligne)
-                var ticketEvolutionCtx = document.getElementById('ticketEvolutionChart').getContext('2d');
+               var ticketEvolutionCtx = document.getElementById('ticketEvolutionChart').getContext('2d');
                 new Chart(ticketEvolutionCtx, {
                     type: 'line',
                     data: {!! json_encode($ticketEvolution) !!},
@@ -279,18 +279,7 @@
                 });
 
                 // Techniciens avec le plus de tickets résolus (graphique en barres)
-                var technicianStatsCtx = document.getElementById('technicianStatsChart').getContext('2d');
-                new Chart(technicianStatsCtx, {
-                    type: 'bar',
-                    data: {!! json_encode($technicianStats) !!},
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
+              
 
                 // Problèmes les plus courants (graphique en secteurs)
                 var issueStatsCtx = document.getElementById('issueStatsChart').getContext('2d');
@@ -352,4 +341,5 @@
         <!-- Template Javascript -->
         <script src="{{asset('assets_company/js/main.js')}}"></script>
 </body>
+
 </html>

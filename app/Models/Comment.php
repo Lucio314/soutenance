@@ -13,10 +13,15 @@ class Comment extends Model
         'body',
         'client_email',
         'is_technician',
+        'technician_id'
     ];
 
     public function ticket()
     {
         return $this->belongsTo(Ticket::class);
+    }
+    public function technician()
+    {
+        return $this->belongsTo(Technician::class);
     }
 }

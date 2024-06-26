@@ -46,32 +46,32 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/companies/dashboard', [CompanyController::class, 'dashboard'])->name('companies.dashboard');
     Route::resource('/companies', CompanyController::class);
-    Route::resource('/applications', ApplicationController::class);  //->middleware('is_active')
-    Route::resource('/problem_categories', ProblemCategoryController::class);
-    Route::get('/technicians/dashboard', [TechnicianController::class, 'dashboard'])->name('technicians.dashboard');
-    Route::resource('/technicians', TechnicianController::class);
-    Route::get('/tickets/myindex', [TicketController::class, 'myindex'])->name('tickets.myindex');
-    Route::resource('/tickets', TicketController::class);
+    Route::resource('/applications', ApplicationController::class)->middleware('is_active');
+    Route::resource('/problem_categories', ProblemCategoryController::class)->middleware('is_active');
+    Route::get('/technicians/dashboard', [TechnicianController::class, 'dashboard'])->name('technicians.dashboard')->middleware('is_active');
+    Route::resource('/technicians', TechnicianController::class)->middleware('is_active');
+    Route::get('/tickets/myindex', [TicketController::class, 'myindex'])->name('tickets.myindex')->middleware('is_active');;
+    Route::resource('/tickets', TicketController::class)->middleware('is_active');
 
     Route::resource('/travaillers', TravaillerController::class);
-    Route::post('/tickets/{ticketId}/handle/{technicianId}', [TicketController::class, 'handleTicket'])->name('tickets.handle');
+    Route::post('/tickets/{ticketId}/handle/{technicianId}', [TicketController::class, 'handleTicket'])->name('tickets.handle')->middleware('is_active');
     Route::post('/tickets/verrouiller-en-masse', [TicketController::class, 'verrouillerEnMasse'])->name('tickets.verrouillerEnMasse');
-    Route::get('/companies/chart', [ChartController::class, 'userChart']);
+    Route::get('/companies/chart', [ChartController::class, 'userChart'])->middleware('is_active');
 
     //admin
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/admin/companies', [AdminController::class, 'getCompany'])->name('admin.companies');
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware('is_active');
+    Route::get('/admin/companies', [AdminController::class, 'getCompany'])->name('admin.companies')->middleware('is_active');
     Route::get('/admin/technicians', [AdminController::class, 'getTechnicians'])->name('admin.technicians');
     Route::get('/admin/tickets', [AdminController::class, 'getTickets'])->name('admin.tickets');
     Route::patch('/admin/companies/{company}/toggle', [AdminController::class, 'toggleActive'])->name('admin.company.toggle');
 
-    Route::post('tickets/{id}/transfer', [TicketController::class, 'transfer'])->name('tickets.transfer');
-    Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])->name('tickets.comments.store');
+    Route::post('tickets/{id}/transfer', [TicketController::class, 'transfer'])->name('tickets.transfer')->middleware('is_active');
+    Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])->name('tickets.comments.store')->middleware('is_active');
 
     Route::post('technician/tickets/{id}/accept', [TechnicianController::class, 'acceptTicket'])->name('technician.acceptTicket');
     Route::post('technician/tickets/{id}/decline', [TechnicianController::class, 'declineTicket'])->name('technician.declineTicket');
     // Route pour clôturer un ticket
-    Route::post('/tickets/{ticketId}/close/{technicianId}', [TicketController::class, 'closeTicket'])->name('tickets.close');
+    Route::post('/tickets/{ticketId}/close/{technicianId}', [TicketController::class, 'closeTicket'])->name('tickets.close')->middleware('is_active');
 });
 
 

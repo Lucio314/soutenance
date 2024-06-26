@@ -58,132 +58,177 @@ class CompanyController extends Controller
         // Rediriger vers la page de détails de l'entreprise nouvellement créée
         return redirect()->route('companies.dashboard');
     }
+
     public function dashboard(Company $company)
     {
-        // Évolution des tickets (nouveaux, résolus, terminés) au cours de l'année
-        $tickets = Ticket::selectRaw('MONTH(created_at) as month, status, COUNT(*) as count')
-            ->whereYear('created_at', date('Y'))
-            ->groupBy('month', 'status')
-            ->orderBy('month')
-            ->get();
+        // Initialisation des variables par défaut
+        $ticketEvolution = [
+            'labels' => [],
+            'datasets' => []
+        ];
+        $technicianStats = [
+            'labels' => [],
+            'datasets' => []
+        ];
+        $issueStats = [
+            'labels' => [],
+            'datasets' => []
+        ];
+        $applicationStats = [
+            'labels' => [],
+            'datasets' => []
+        ];
+        $company = Auth::user()->company;
+     //   dd($company->is_active);
+        if ($company->is_active) {
+            // Évolution des tickets (nouveaux, résolus, terminés) au cours de l'année
+            $tickets = Ticket::selectRaw('MONTH(created_at) as month, status, COUNT(*) as count')
+                ->whereHas('application', function ($query) use ($company) {
+                    $query->where('company_id', $company->id);
+                })
+                ->whereYear('created_at', date('Y'))
+                ->groupBy('month', 'status')
+                ->orderBy('month')
+                ->get();
 
-        $labels = [];
-        $newTickets = [];
-        $resolvedTickets = [];
-        $closedTickets = [];
-        $colors = ['#FF6384', '#36A2EB', '#FFCE56', '#8BC34A', '#FF5722', '#009688', '#795548', '#9C27B0', '#2496F3', '#CDDC39', '#607D8B'];
+            $labels = [];
+            $newTickets = [];
+            $resolvedTickets = [];
+            $closedTickets = [];
+            $colors = ['#FF6384', '#36A2EB', '#FFCE56', '#8BC34A', '#FF5722', '#009688', '#795548', '#9C27B0', '#2496F3', '#CDDC39', '#607D8B'];
 
-        for ($i = 1; $i <= 12; $i++) {
-            $month = date('F', mktime(0, 0, 0, $i, 1));
-            $labels[] = $month;
-            $newCount = 0;
-            $resolvedCount = 0;
-            $closedCount = 0;
+            for ($i = 1; $i <= 12; $i++) {
+                $month = date('F', mktime(0, 0, 0, $i, 1));
+                $labels[] = $month;
+                $newCount = 0;
+                $resolvedCount = 0;
+                $closedCount = 0;
 
-            foreach ($tickets as $ticket) {
-                if ($ticket->month == $i) {
-                    if ($ticket->status == 'Nouveau') {
-                        $newCount = $ticket->count;
-                    } elseif ($ticket->status == 'Terminé') {
-                        $resolvedCount = $ticket->count;
-                    } elseif ($ticket->status == 'En cours') {
-                        $closedCount = $ticket->count;
+                foreach ($tickets as $ticket) {
+                    if ($ticket->month == $i) {
+                        if ($ticket->status == 'Nouveau') {
+                            $newCount = $ticket->count;
+                        } elseif ($ticket->status == 'Résolu') {
+                            $resolvedCount = $ticket->count;
+                        } elseif ($ticket->status == 'Terminé') {
+                            $closedCount = $ticket->count;
+                        }
                     }
                 }
+
+                $newTickets[] = $newCount;
+                $resolvedTickets[] = $resolvedCount;
+                $closedTickets[] = $closedCount;
             }
 
-            $newTickets[] = $newCount;
-            $resolvedTickets[] = $resolvedCount;
-            $closedTickets[] = $closedCount;
+            $ticketEvolution = [
+                'labels' => $labels,
+                'datasets' => [
+                    [
+                        'label' => 'Nouveaux Tickets',
+                        'data' => $newTickets,
+                        'backgroundColor' => '#FF6384',
+                        'borderWidth' => 1
+                    ],
+                    [
+                        'label' => 'Tickets en cours',
+                        'data' => $resolvedTickets,
+                        'backgroundColor' => '#36A2EB',
+                        'borderWidth' => 1
+                    ],
+                    [
+                        'label' => 'Tickets Terminés',
+                        'data' => $closedTickets,
+                        'backgroundColor' => '#FFCE56',
+                        'borderWidth' => 1
+                    ]
+                ]
+            ];
+
+            // // Techniciens avec le plus de tickets résolus
+            // $technicians = Technician::whereHas('company', function ($query) use ($company) {
+            //     $query->where('id', $company->id);
+            // })->withCount(['tickets as tickets_resolved_count' => function ($query) {
+            //     $query->where('status', 'Terminé');
+            // }])->get();
+
+            // $techNames = $technicians->pluck('user.name');
+            // $techData = $technicians->pluck('tickets_resolved_count');
+
+            // $technicianStats = [
+            //     'labels' => $techNames,
+            //     'datasets' => [
+            //         [
+            //             'label' => 'Tickets résolus',
+            //             'data' => $techData,
+            //             'backgroundColor' => $colors,
+            //             'borderWidth' => 1
+            //         ]
+            //     ]
+            // ];
+
+            // Problèmes les plus courants
+            $issues = ProblemCategory::selectRaw('name, COUNT(*) as count')
+                ->whereHas('application', function ($query) use ($company) {
+                    $query->where('company_id', $company->id);
+                })
+                ->groupBy('name')
+                ->orderBy('count', 'desc')
+                ->take(5)
+                ->get();
+
+            $issueTypes = $issues->pluck('name');
+            $issueData = $issues->pluck('count');
+
+            $issueStats = [
+                'labels' => $issueTypes,
+                'datasets' => [
+                    [
+                        'label' => 'Nombre de problèmes',
+                        'data' => $issueData,
+                        'backgroundColor' => $colors,
+                        'borderWidth' => 1
+                    ]
+                ]
+            ];
+
+            // Problèmes sur les applications
+            $applications = Application::withCount(['problemCategories' => function ($query) use ($company) {
+                $query->whereHas('application', function ($query) use ($company) {
+                    $query->where('company_id', $company->id);
+                });
+            }])
+                ->where('company_id', $company->id)
+                ->orderBy('problem_categories_count', 'desc')
+                ->take(5)
+                ->get();
+
+            $appNames = $applications->pluck('app_name');
+            $appData = $applications->pluck('problem_categories_count');
+
+            $applicationStats = [
+                'labels' => $appNames,
+                'datasets' => [
+                    [
+                        'label' => 'Problèmes sur les applications',
+                        'data' => $appData,
+                        'backgroundColor' => $colors,
+                        'borderWidth' => 1
+                    ]
+                ]
+            ];
         }
 
-        $ticketEvolution = [
-            'labels' => $labels,
-            'datasets' => [
-                [
-                    'label' => 'Nouveaux Tickets',
-                    'data' => $newTickets,
-                    'backgroundColor' => '#FF6384',
-                    'borderWidth' => 1
-                ],
-                [
-                    'label' => 'Tickets Résolus',
-                    'data' => $resolvedTickets,
-                    'backgroundColor' => '#36A2EB',
-                    'borderWidth' => 1
-                ],
-                [
-                    'label' => 'Tickets Terminés',
-                    'data' => $closedTickets,
-                    'backgroundColor' => '#FFCE56',
-                    'borderWidth' => 1
-                ]
-            ]
-        ];
-
-        // Techniciens avec le plus de tickets résolus
-        $technicians = Technician::all();
-
-        $techNames = $technicians->pluck('user.name');
-        $techData = $technicians->pluck('tickets_resolved_count');
-
-        $technicianStats = [
-            'labels' => $techNames,
-            'datasets' => [
-                [
-                    'label' => 'Tickets résolus',
-                    'data' => $techData,
-                    'backgroundColor' => $colors,
-                    'borderWidth' => 1
-                ]
-            ]
-        ];
-
-        // Problèmes les plus courants
-        $issues = ProblemCategory::selectRaw('name, COUNT(*) as count')
-            ->groupBy('name')
-            ->orderBy('count', 'desc')
-            ->take(5)
-            ->get();
-
-        $issueTypes = $issues->pluck('name');
-        $issueData = $issues->pluck('count');
-
-        $issueStats = [
-            'labels' => $issueTypes,
-            'datasets' => [
-                [
-                    'label' => 'Nombre de problèmes',
-                    'data' => $issueData,
-                    'backgroundColor' => $colors,
-                    'borderWidth' => 1
-                ]
-            ]
-        ];
-
-        // Problèmes sur les applications
-        $applications = Application::withCount('problemCategories')
-            ->orderBy('problem_categories_count', 'desc')
-            ->take(5)
-            ->get();
-
-        $appNames = $applications->pluck('app_name');
-        $appData = $applications->pluck('problem_categories_count');
-
-        $applicationStats = [
-            'labels' => $appNames,
-            'datasets' => [
-                [
-                    'label' => 'Problèmes sur les applications',
-                    'data' => $appData,
-                    'backgroundColor' => $colors,
-                    'borderWidth' => 1
-                ]
-            ]
-        ];
-
-        return view('companies.dashboard', compact('company', 'ticketEvolution', 'technicianStats', 'issueStats', 'applicationStats'));
+        return view('companies.dashboard', [
+            'company' => $company,
+            'ticketEvolution' => $ticketEvolution,
+            // 'technicianStats' => $technicianStats,
+            'issueStats' => $issueStats,
+            'applicationStats' => $applicationStats
+        ]);
     }
+
+
     /**
      * Display the specified resource.
      */

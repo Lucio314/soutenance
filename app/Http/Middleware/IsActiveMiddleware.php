@@ -18,8 +18,7 @@ class IsActiveMiddleware
     {
         $user = Auth::user();
         if ($user && $user->company && !$user->company->is_active) {
-
-            return response()->json(['error' => 'Company is not active'], 403);
+            return redirect()->back()->with('error', 'Your company is not active.');
         }
         return $next($request);
     }

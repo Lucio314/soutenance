@@ -172,9 +172,9 @@
                     <i class="fas fa-envelope"></i>
                     <input type="email" name="app_email" placeholder="Application Email" required />
                 </div>
-                <div class="input-field">
+                <div class="input-field" style="display: none">
                     <i class="fas fa-phone"></i>
-                    <input type="text" name="app_phone" placeholder="Application Phone" required />
+                    <input type="text" name="app_phone" placeholder="Application Phone" value="123-456-789" />
                 </div>
                 <!-- Ajoutez un champ caché pour l'ID de la société -->
                 <input type="hidden" name="company_id" value="{{Auth::user()->company->id }}" />
